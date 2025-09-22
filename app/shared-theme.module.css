@@ -230,18 +230,26 @@
   color: var(--text-light-muted);
 }
 
-/* Ensure text on dark blue backgrounds is light colored */
-.pageBackground * {
+/* Ensure text on dark blue backgrounds is light colored by default */
+.pageBackground {
   color: var(--text-light);
 }
 
-/* Keep card content dark since cards have white backgrounds */
+/* Keep card and light section content dark since they have light backgrounds */
+.pageBackground .card,
 .pageBackground .card *,
+.pageBackground .section,
 .pageBackground .section *,
+.pageBackground .sectionPadded,
 .pageBackground .sectionPadded *,
+.pageBackground .successMessage,
 .pageBackground .successMessage *,
+.pageBackground .errorMessage,
 .pageBackground .errorMessage *,
-.pageBackground .warningMessage * {
+.pageBackground .warningMessage,
+.pageBackground .warningMessage *,
+.pageBackground .benefits,
+.pageBackground .benefits * {
   color: #1a202c;
 }
 
