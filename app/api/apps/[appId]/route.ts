@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getApp, getTestersForApp } from "@/lib/firebase";
+import { getApp, getTestersForApp, getPromotionalCodesForApp } from "@/lib/firebase";
 
 export async function GET(
   request: NextRequest,
@@ -9,28 +9,28 @@ export async function GET(
     const resolvedParams = await params;
     const appId = resolvedParams.appId;
 
-    const [app, testers] = await Promise.all([
+    const [app, testers, promotionalCodes] = await Promise.all([
       getApp(appId),
       getTestersForApp(appId),
+      getPromotionalCodesForApp(appId),
     ]);
 
     if (!app) {
       return NextResponse.json({ error: "App not found" }, { status: 404 });
     }
 
+    const redeemedCodes = promotionalCodes.filter(code => code.redeemedAt);
     const stats = {
       totalTesters: testers.length,
       joinedGroup: testers.filter((t) => t.hasJoinedGroup).length,
       codesAssigned: testers.filter((t) => t.promotionalCode).length,
-      availableCodes: app.promotionalCodes
-        ? app.promotionalCodes.length -
-          testers.filter((t) => t.promotionalCode).length
-        : 0,
+      availableCodes: promotionalCodes.length - redeemedCodes.length,
     };
 
     return NextResponse.json({
       app,
       testers,
+      promotionalCodes,
       stats,
     });
   } catch (error) {

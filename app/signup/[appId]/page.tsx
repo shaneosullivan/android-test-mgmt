@@ -1,4 +1,6 @@
 import { getApp, getTesterByEmail } from "@/lib/firebase";
+import ErrorBox from "@/components/ErrorBox";
+import Button from "@/components/Button";
 import styles from "./page.module.css";
 
 interface SignupPageProps {
@@ -27,7 +29,31 @@ export default async function SignupPage({
     if (!app) {
       return (
         <div className={styles.container}>
-          <div className={styles.error}>App not found</div>
+          <ErrorBox 
+            title="App Not Found"
+            message={`The app "${appId}" could not be found. This might be because it hasn't been registered yet, or the URL is incorrect.`}
+          >
+            <div style={{ textAlign: "center", marginTop: "20px" }}>
+              <a 
+                href="/register" 
+                style={{ 
+                  display: "inline-block",
+                  padding: "12px 24px",
+                  backgroundColor: "#16a34a",
+                  color: "white",
+                  textDecoration: "none",
+                  borderRadius: "8px",
+                  fontWeight: "500",
+                  marginBottom: "16px"
+                }}
+              >
+                Register Your App
+              </a>
+              <p style={{ margin: "8px 0", color: "#6b7280", fontSize: "14px" }}>
+                or <a href="/" style={{ color: "#3b82f6", textDecoration: "underline" }}>return to homepage</a>
+              </p>
+            </div>
+          </ErrorBox>
         </div>
       );
     }
@@ -102,9 +128,9 @@ export default async function SignupPage({
                   className={styles.emailInput}
                   required
                 />
-                <button type="submit" className={styles.returnButton}>
+                <Button type="submit" variant="secondary">
                   Retrieve Code
-                </button>
+                </Button>
               </form>
             </div>
           </div>
@@ -189,9 +215,10 @@ export default async function SignupPage({
           </div>
 
           <div className={styles.step}>
-            <div className={styles.error}>
-              There was an error processing your request. Please try again.
-            </div>
+            <ErrorBox 
+              title="Error Processing Request"
+              message="There was an error processing your request. Please try again."
+            />
 
             <a href={`/signup/${appId}`} className={styles.returnButton}>
               Try Again
@@ -245,9 +272,9 @@ export default async function SignupPage({
               className={styles.emailInput}
             />
 
-            <button type="submit" className={styles.submitButton}>
+            <Button type="submit">
               Get Access
-            </button>
+            </Button>
           </form>
         </div>
 
@@ -264,17 +291,43 @@ export default async function SignupPage({
               className={styles.emailInput}
               required
             />
-            <button type="submit" className={styles.returnButton}>
+            <Button type="submit" variant="secondary">
               Retrieve Code
-            </button>
+            </Button>
           </form>
         </div>
       </div>
     );
   } catch (err) {
+    console.error("Signup page error:", err);
+    
     return (
       <div className={styles.container}>
-        <div className={styles.error}>Failed to load app data</div>
+        <ErrorBox 
+          title="App Not Found"
+          message={`The app "${appId}" could not be found. This might be because it hasn't been registered yet, or the URL is incorrect.`}
+        >
+          <div style={{ textAlign: "center", marginTop: "20px" }}>
+            <a 
+              href="/register" 
+              style={{ 
+                display: "inline-block",
+                padding: "12px 24px",
+                backgroundColor: "#16a34a",
+                color: "white",
+                textDecoration: "none",
+                borderRadius: "8px",
+                fontWeight: "500",
+                marginBottom: "16px"
+              }}
+            >
+              Register Your App
+            </a>
+            <p style={{ margin: "8px 0", color: "#6b7280", fontSize: "14px" }}>
+              or <a href="/" style={{ color: "#3b82f6", textDecoration: "underline" }}>return to homepage</a>
+            </p>
+          </div>
+        </ErrorBox>
       </div>
     );
   }

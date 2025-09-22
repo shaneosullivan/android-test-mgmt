@@ -35,7 +35,7 @@ export default function Footer() {
               rel="noopener noreferrer"
               className={styles.authorLink}
             >
-              Shane O'Sullivan
+              Chofter Apps
             </a>
             . All rights reserved.
           </p>

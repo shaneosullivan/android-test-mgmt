@@ -1,6 +1,7 @@
 export const FIRESTORE_COLLECTIONS = {
   APPS: "apps",
   TESTERS: "testers",
+  PROMOTIONAL_CODES: "promotional_codes", // Used as subcollection name
 } as const;
 
 export const REQUIRED_ENV_VARS = [

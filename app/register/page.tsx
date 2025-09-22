@@ -3,9 +3,22 @@ import { adminDb } from "@/lib/firebase";
 import { getSessionFromCookie } from "@/util/auth";
 import { validateConfig } from "@/util/config";
 import AuthButton from "./auth-button";
+import RegisterForm from "./register-form";
+import ErrorBox from "@/components/ErrorBox";
 import styles from "./page.module.css";
 
-export default async function Register() {
+interface RegisterPageProps {
+  searchParams: Promise<{
+    appName?: string;
+    googleGroupEmail?: string;
+    playStoreUrl?: string;
+    promotionalCodes?: string;
+    error?: string;
+    groupEmail?: string;
+  }>;
+}
+
+export default async function Register(props: RegisterPageProps) {
   // Check if all required configuration is present
   const config = validateConfig();
   if (!config.isValid || !adminDb) {
@@ -14,6 +27,9 @@ export default async function Register() {
 
   // Check if user is authenticated
   const session = await getSessionFromCookie();
+  
+  // Get search parameters
+  const searchParams = await props.searchParams;
 
   return (
     <div className={styles.page}>
@@ -41,74 +57,77 @@ export default async function Register() {
 
         <AuthButton session={session} />
 
-        <form
-          action="/api/apps"
-          method="POST"
-          encType="multipart/form-data"
-          className={
-            session ? styles.form : `${styles.form} ${styles.formDisabled}`
-          }
-        >
-          <div className={styles.field}>
-            <label htmlFor="appName">App Name</label>
-            <input
-              id="appName"
-              name="appName"
-              type="text"
-              required
-              placeholder="My Awesome App"
-            />
-          </div>
+        {searchParams.error === "authentication_required" && (
+          <ErrorBox
+            title="Authentication Required:"
+            message="You must be signed in to register an app."
+          />
+        )}
 
-          <div className={styles.field}>
-            <label htmlFor="googleGroupEmail">Google Group Email</label>
-            <input
-              id="googleGroupEmail"
-              name="googleGroupEmail"
-              type="email"
-              required
-              placeholder="beta-testers@googlegroups.com"
-            />
-          </div>
-
-          <div className={styles.field}>
-            <label htmlFor="playStoreUrl">Play Store URL</label>
-            <input
-              id="playStoreUrl"
-              name="playStoreUrl"
-              type="url"
-              required
-              placeholder="https://play.google.com/store/apps/details?id=com.example.app"
-            />
-          </div>
-
-          <div className={styles.field}>
-            <label htmlFor="promotionalCodes">
-              Promotional Codes (optional)
-              <small>Enter codes manually or upload a CSV file</small>
-            </label>
-            <textarea
-              id="promotionalCodes"
-              name="promotionalCodes"
-              placeholder="CODE1, CODE2, CODE3"
-              rows={4}
-            />
-            <div className={styles.uploadOption}>
-              <span className={styles.uploadLabel}>Or upload CSV file:</span>
-              <input
-                type="file"
-                id="promotionalCodesFile"
-                name="promotionalCodesFile"
-                accept=".csv"
-                className={styles.fileInput}
-              />
+        {searchParams.error === "group_access_denied" && (
+          <ErrorBox
+            title="Google Group Access Issue:"
+            message={`Cannot access or manage the Google Group ${searchParams.groupEmail || searchParams.googleGroupEmail}.`}
+          >
+            <div style={{ textAlign: "left" }}>
+              <p>Please verify:</p>
+              <ul>
+                <li>The group email address is correct</li>
+                <li>The Google Group exists</li>
+                <li>You are signed in with the correct Google account</li>
+                <li>Your account has admin permissions for this group</li>
+                <li>The group is accessible (not private/restricted)</li>
+              </ul>
             </div>
-          </div>
+          </ErrorBox>
+        )}
 
-          <button type="submit" className={styles.submitButton}>
-            Register App
-          </button>
-        </form>
+        {searchParams.error === "invalid_play_store_url" && (
+          <ErrorBox
+            title="Invalid Play Store URL"
+            message="The Play Store URL you provided is not valid or we couldn't extract the Android app ID from it."
+          >
+            <div style={{ textAlign: "left" }}>
+              <p>Please ensure your URL follows this format:</p>
+              <code>https://play.google.com/store/apps/details?id=com.example.app</code>
+            </div>
+          </ErrorBox>
+        )}
+
+        {searchParams.error === "app_already_exists" && (
+          <ErrorBox
+            title="App Already Registered"
+            message="This Android app has already been registered in our system."
+          >
+            <div style={{ textAlign: "left" }}>
+              <p>Each Android app can only be registered once. If you are the owner of this app and need to make changes, please contact support or try registering a different version of your app.</p>
+            </div>
+          </ErrorBox>
+        )}
+
+        {searchParams.error === "missing_required_fields" && (
+          <ErrorBox
+            title="Missing Required Information"
+            message="Please fill in all required fields: App Name, Google Group Email, and Play Store URL."
+          />
+        )}
+
+        {searchParams.error === "creation_failed" && (
+          <ErrorBox
+            title="Registration Failed"
+            message="There was an unexpected error while registering your app. Please try again or contact support if the problem persists."
+          />
+        )}
+
+        <RegisterForm
+          session={session}
+          defaultValues={{
+            appName: searchParams.appName || "",
+            googleGroupEmail: searchParams.googleGroupEmail || "",
+            playStoreUrl: searchParams.playStoreUrl || "",
+            promotionalCodes: searchParams.promotionalCodes || "",
+          }}
+        />
       </main>
     </div>
   );

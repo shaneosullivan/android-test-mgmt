@@ -1,0 +1,57 @@
+.button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Primary green button */
+.primary {
+  background: #16a34a;
+  color: white;
+}
+
+.primary:hover:not(:disabled) {
+  background: #15803d;
+}
+
+/* Secondary button */
+.secondary {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Google sign-in button */
+.google {
+  background: white;
+  color: #333;
+  border: 1px solid #dadce0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.google:hover:not(:disabled) {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-color: #c1c7cd;
+}
+
+.google:active:not(:disabled) {
+  transform: translateY(1px);
+}

@@ -1,8 +1,9 @@
-import { getApp, getTestersForApp } from "@/lib/firebase";
+import { getApp, getTestersForApp, getPromotionalCodesForApp } from "@/lib/firebase";
 import { getSessionFromCookie } from "@/util/auth";
 import { APP_URL_BASE } from "@/lib/consts";
 import CopyButton from "./copy-button";
 import LoginPrompt from "./login-prompt";
+import ErrorBox from "@/components/ErrorBox";
 import styles from "./page.module.css";
 
 interface AdminPageProps {
@@ -21,30 +22,49 @@ export default async function AdminPage({ params }: AdminPageProps) {
   }
 
   try {
-    const [app, testers] = await Promise.all([
+    const [app, testers, promotionalCodes] = await Promise.all([
       getApp(appId),
       getTestersForApp(appId),
+      getPromotionalCodesForApp(appId),
     ]);
 
     if (!app) {
       return (
         <div className={styles.container}>
-          <div className={styles.error}>App not found</div>
+          <ErrorBox title="App not found" />
+        </div>
+      );
+    }
+
+    if (!app.isSetupComplete) {
+      return (
+        <div className={styles.container}>
+          <ErrorBox 
+            title="App Setup Incomplete" 
+            message="This app registration was not completed successfully. Please try registering your app again."
+          >
+            <div style={{ textAlign: "center", marginTop: "16px" }}>
+              <a href="/register" style={{ color: "#3b82f6", textDecoration: "underline" }}>
+                Register App Again
+              </a>
+            </div>
+          </ErrorBox>
         </div>
       );
     }
 
     const signupUrl = `${APP_URL_BASE}/signup/${appId}`;
+    const isConsumerGroup = app.googleGroupEmail.endsWith("@googlegroups.com");
+    const completeUrl = `${APP_URL_BASE}/signup/${appId}/complete?s=${app.appIdSecret}`;
+    const groupName = app.googleGroupEmail.split("@")[0];
 
     // Calculate statistics
+    const redeemedCodes = promotionalCodes.filter(code => code.redeemedAt);
     const stats = {
       totalTesters: testers.length,
       joinedGroup: testers.filter((t) => t.hasJoinedGroup).length,
       codesAssigned: testers.filter((t) => t.promotionalCode).length,
-      availableCodes: app.promotionalCodes
-        ? app.promotionalCodes.length -
-          testers.filter((t) => t.promotionalCode).length
-        : 0,
+      availableCodes: promotionalCodes.length - redeemedCodes.length,
     };
 
     return (
@@ -72,7 +92,7 @@ export default async function AdminPage({ params }: AdminPageProps) {
             </div>
             <div className={styles.detail}>
               <strong>Total Promotional Codes:</strong>{" "}
-              {app.promotionalCodes?.length || 0}
+              {promotionalCodes.length}
             </div>
           </div>
         </section>
@@ -98,6 +118,49 @@ export default async function AdminPage({ params }: AdminPageProps) {
             </div>
           </div>
         </section>
+
+        {isConsumerGroup && (
+          <section className={styles.section}>
+            <h2>🔧 Consumer Group Setup Required</h2>
+            <p>
+              Since you're using a consumer Google Group (
+              <code>{app.googleGroupEmail}</code>), you need to add a welcome
+              message to allow automated signup.
+            </p>
+            <div className={styles.instructions}>
+              <h3>Setup Instructions:</h3>
+              <ol>
+                <li>
+                  Go to your Google Group settings:
+                  <a
+                    href={`https://groups.google.com/g/${groupName}/settings`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.setupLink}
+                  >
+                    https://groups.google.com/g/{groupName}/settings
+                  </a>
+                </li>
+                <li>
+                  Add this text to your "Welcome message":
+                  <div className={styles.welcomeMessage}>
+                    To install the app for free using a promotion code, click
+                    this link {completeUrl}
+                  </div>
+                  <CopyButton
+                    url={`To install the app for free using a promotion code, click this link ${completeUrl}`}
+                  />
+                </li>
+                <li>Save the settings</li>
+              </ol>
+              <p>
+                <strong>How it works:</strong> When testers join your Google
+                Group manually, they'll receive this welcome message with a
+                direct link to get their promotional code.
+              </p>
+            </div>
+          </section>
+        )}
 
         <section className={styles.section}>
           <h2>Sign-up Link</h2>
@@ -150,9 +213,35 @@ export default async function AdminPage({ params }: AdminPageProps) {
       </div>
     );
   } catch (error) {
+    console.error("Admin page error:", error);
+    
     return (
       <div className={styles.container}>
-        <div className={styles.error}>Failed to load app data</div>
+        <ErrorBox 
+          title="App Not Found"
+          message={`The app "${appId}" could not be found. This might be because it hasn't been registered yet, or the URL is incorrect.`}
+        >
+          <div style={{ textAlign: "center", marginTop: "20px" }}>
+            <a 
+              href="/register" 
+              style={{ 
+                display: "inline-block",
+                padding: "12px 24px",
+                backgroundColor: "#16a34a",
+                color: "white",
+                textDecoration: "none",
+                borderRadius: "8px",
+                fontWeight: "500",
+                marginBottom: "16px"
+              }}
+            >
+              Register Your App
+            </a>
+            <p style={{ margin: "8px 0", color: "#6b7280", fontSize: "14px" }}>
+              or <a href="/" style={{ color: "#3b82f6", textDecoration: "underline" }}>return to homepage</a>
+            </p>
+          </div>
+        </ErrorBox>
       </div>
     );
   }

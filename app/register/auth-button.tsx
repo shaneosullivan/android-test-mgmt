@@ -1,7 +1,8 @@
 "use client";
 
 import { UserSession } from "@/util/auth";
-import { handleSignIn, handleSignOut } from "@/lib/auth-utils";
+import { handleSignIn } from "@/lib/auth-utils";
+import Button from "@/components/Button";
 import styles from "./page.module.css";
 
 interface AuthButtonProps {
@@ -14,6 +15,7 @@ function AuthButton(props: AuthButtonProps) {
   const onSignIn = () => {
     handleSignIn("/register");
   };
+
 
   if (session) {
     return (
@@ -31,13 +33,12 @@ function AuthButton(props: AuthButtonProps) {
             <p className={styles.userEmail}>{session.email}</p>
           </div>
         </div>
-        <button
-          type="button"
-          className={styles.signOutButton}
-          onClick={handleSignOut}
-        >
-          Sign out
-        </button>
+        <form method="POST" action="/api/auth/logout">
+          <input type="hidden" name="redirectTo" value="/register" />
+          <Button type="submit" variant="secondary">
+            Sign out
+          </Button>
+        </form>
         <p className={styles.authHelp}>
           ✅ You're signed in and can now register your app.
         </p>
@@ -47,11 +48,7 @@ function AuthButton(props: AuthButtonProps) {
 
   return (
     <div className={styles.authSection}>
-      <button
-        type="button"
-        className={styles.googleSignInButton}
-        onClick={onSignIn}
-      >
+      <Button type="button" variant="google" onClick={onSignIn}>
         <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
           <path
             fill="#4285F4"
@@ -71,7 +68,7 @@ function AuthButton(props: AuthButtonProps) {
           />
         </svg>
         Sign in with Google
-      </button>
+      </Button>
       <p className={styles.authHelp}>
         You'll be redirected to Google to sign in with your Google Groups
         administrator account.
