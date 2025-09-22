@@ -23,23 +23,32 @@ export default async function Register() {
 
         <div className={styles.disclaimer}>
           <p>
-            <strong>Disclaimer:</strong> This service is not affiliated with Google. 
-            It simply helps you automate the process of managing Google Groups for beta testing 
-            and distributing promotional codes to your testers.
+            <strong>Disclaimer:</strong> This service is not affiliated with
+            Google. It simply helps you automate the process of managing Google
+            Groups for beta testing and distributing promotional codes to your
+            testers.
           </p>
         </div>
 
         <div className={styles.authNotice}>
           <p>
-            <strong>🔐 Authentication Required:</strong> Before registering your app, you must sign in 
-            with the same Google account that administers your Google Group. This allows us to verify 
-            your permissions and manage group membership on your behalf.
+            <strong>🔐 Authentication Required:</strong> Before registering your
+            app, you must sign in with the same Google account that administers
+            your Google Group. This allows us to verify your permissions and
+            manage group membership on your behalf.
           </p>
         </div>
 
         <AuthButton session={session} />
 
-        <form action="/api/apps" method="POST" encType="multipart/form-data" className={session ? styles.form : `${styles.form} ${styles.formDisabled}`}>
+        <form
+          action="/api/apps"
+          method="POST"
+          encType="multipart/form-data"
+          className={
+            session ? styles.form : `${styles.form} ${styles.formDisabled}`
+          }
+        >
           <div className={styles.field}>
             <label htmlFor="appName">App Name</label>
             <input

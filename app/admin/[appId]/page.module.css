@@ -266,7 +266,7 @@
   }
 
   .tableRow > div:before {
-    content: attr(data-label) ': ';
+    content: attr(data-label) ": ";
     font-weight: 500;
     margin-right: 8px;
   }

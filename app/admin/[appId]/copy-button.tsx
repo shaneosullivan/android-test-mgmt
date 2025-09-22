@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import styles from './page.module.css';
+import { useState } from "react";
+import styles from "./page.module.css";
 
 interface CopyButtonProps {
   url: string;
@@ -17,16 +17,13 @@ export default function CopyButton(props: CopyButtonProps) {
       setCopiedToClipboard(true);
       setTimeout(() => setCopiedToClipboard(false), 2000);
     } catch (err) {
-      console.error('Failed to copy to clipboard:', err);
+      console.error("Failed to copy to clipboard:", err);
     }
   }
 
   return (
-    <button 
-      onClick={copyToClipboard}
-      className={styles.copyButton}
-    >
-      {copiedToClipboard ? 'Copied!' : 'Copy'}
+    <button onClick={copyToClipboard} className={styles.copyButton}>
+      {copiedToClipboard ? "Copied!" : "Copy"}
     </button>
   );
 }

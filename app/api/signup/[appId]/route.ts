@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getApp, getTesterByEmail } from '@/util/firebase-admin';
+import { NextRequest, NextResponse } from "next/server";
+import { getApp, getTesterByEmail } from "@/util/firebase-admin";
 
 export async function GET(
   request: NextRequest,
@@ -9,15 +9,12 @@ export async function GET(
     const resolvedParams = await params;
     const appId = resolvedParams.appId;
     const { searchParams } = new URL(request.url);
-    const email = searchParams.get('email');
-    
+    const email = searchParams.get("email");
+
     const app = await getApp(appId);
 
     if (!app) {
-      return NextResponse.json(
-        { error: 'App not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "App not found" }, { status: 404 });
     }
 
     let tester = null;
@@ -27,12 +24,12 @@ export async function GET(
 
     return NextResponse.json({
       app,
-      tester
+      tester,
     });
   } catch (error) {
-    console.error('Failed to fetch signup data:', error);
+    console.error("Failed to fetch signup data:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch app data' },
+      { error: "Failed to fetch app data" },
       { status: 500 }
     );
   }

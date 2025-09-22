@@ -1,9 +1,9 @@
-import { getApp, getTestersForApp } from '@/util/firebase-admin';
-import { getSessionFromCookie } from '@/util/auth';
-import { APP_URL_BASE } from '@/lib/consts';
-import CopyButton from './copy-button';
-import LoginPrompt from './login-prompt';
-import styles from './page.module.css';
+import { getApp, getTestersForApp } from "@/util/firebase-admin";
+import { getSessionFromCookie } from "@/util/auth";
+import { APP_URL_BASE } from "@/lib/consts";
+import CopyButton from "./copy-button";
+import LoginPrompt from "./login-prompt";
+import styles from "./page.module.css";
 
 interface AdminPageProps {
   params: Promise<{ appId: string }>;
@@ -15,15 +15,15 @@ export default async function AdminPage({ params }: AdminPageProps) {
 
   // Check if user is authenticated
   const session = await getSessionFromCookie();
-  
+
   if (!session) {
     return <LoginPrompt appId={appId} />;
   }
-  
+
   try {
     const [app, testers] = await Promise.all([
       getApp(appId),
-      getTestersForApp(appId)
+      getTestersForApp(appId),
     ]);
 
     if (!app) {
@@ -35,14 +35,16 @@ export default async function AdminPage({ params }: AdminPageProps) {
     }
 
     const signupUrl = `${APP_URL_BASE}/signup/${appId}`;
-    
+
     // Calculate statistics
     const stats = {
       totalTesters: testers.length,
-      joinedGroup: testers.filter(t => t.hasJoinedGroup).length,
-      codesAssigned: testers.filter(t => t.promotionalCode).length,
-      availableCodes: app.promotionalCodes ? 
-        app.promotionalCodes.length - testers.filter(t => t.promotionalCode).length : 0
+      joinedGroup: testers.filter((t) => t.hasJoinedGroup).length,
+      codesAssigned: testers.filter((t) => t.promotionalCode).length,
+      availableCodes: app.promotionalCodes
+        ? app.promotionalCodes.length -
+          testers.filter((t) => t.promotionalCode).length
+        : 0,
     };
 
     return (
@@ -59,13 +61,18 @@ export default async function AdminPage({ params }: AdminPageProps) {
               <strong>Google Group:</strong> {app.googleGroupEmail}
             </div>
             <div className={styles.detail}>
-              <strong>Play Store URL:</strong>{' '}
-              <a href={app.playStoreUrl} target="_blank" rel="noopener noreferrer">
+              <strong>Play Store URL:</strong>{" "}
+              <a
+                href={app.playStoreUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 {app.playStoreUrl}
               </a>
             </div>
             <div className={styles.detail}>
-              <strong>Total Promotional Codes:</strong> {app.promotionalCodes?.length || 0}
+              <strong>Total Promotional Codes:</strong>{" "}
+              {app.promotionalCodes?.length || 0}
             </div>
           </div>
         </section>
@@ -96,10 +103,10 @@ export default async function AdminPage({ params }: AdminPageProps) {
           <h2>Sign-up Link</h2>
           <p>Share this link with potential testers:</p>
           <div className={styles.urlContainer}>
-            <input 
-              type="text" 
-              value={signupUrl} 
-              readOnly 
+            <input
+              type="text"
+              value={signupUrl}
+              readOnly
               className={styles.urlInput}
             />
             <CopyButton url={signupUrl} />
@@ -118,18 +125,22 @@ export default async function AdminPage({ params }: AdminPageProps) {
                 <div>Promotional Code</div>
                 <div>Joined At</div>
               </div>
-              {testers.map(tester => (
+              {testers.map((tester) => (
                 <div key={tester.id} className={styles.tableRow}>
                   <div data-label="Email">{tester.email}</div>
-                  <div data-label="Joined Group" className={tester.hasJoinedGroup ? styles.yes : styles.no}>
-                    {tester.hasJoinedGroup ? 'Yes' : 'No'}
+                  <div
+                    data-label="Joined Group"
+                    className={tester.hasJoinedGroup ? styles.yes : styles.no}
+                  >
+                    {tester.hasJoinedGroup ? "Yes" : "No"}
                   </div>
-                  <div data-label="Promotional Code">{tester.promotionalCode || '-'}</div>
+                  <div data-label="Promotional Code">
+                    {tester.promotionalCode || "-"}
+                  </div>
                   <div data-label="Joined At">
-                    {tester.joinedAt instanceof Date ? 
-                      tester.joinedAt.toLocaleDateString() : 
-                      new Date(tester.joinedAt).toLocaleDateString()
-                    }
+                    {tester.joinedAt instanceof Date
+                      ? tester.joinedAt.toLocaleDateString()
+                      : new Date(tester.joinedAt).toLocaleDateString()}
                   </div>
                 </div>
               ))}

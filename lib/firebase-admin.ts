@@ -10,7 +10,9 @@ function initializeFirebaseAdmin() {
   const config = validateConfig();
 
   if (!config.isValid) {
-    throw new Error(`Missing environment variables: ${config.missing.join(", ")}`);
+    throw new Error(
+      `Missing environment variables: ${config.missing.join(", ")}`
+    );
   }
 
   const privateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY!.replace(

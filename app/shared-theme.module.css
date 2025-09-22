@@ -227,23 +227,23 @@
   .heroTitle {
     font-size: 2.5rem;
   }
-  
+
   .heroSubtitle {
     font-size: 1.1rem;
   }
-  
+
   .heroSection {
     padding: 40px 0 30px 0;
   }
-  
+
   .section {
     padding: 40px 0;
   }
-  
+
   .sectionTitle {
     font-size: 2rem;
   }
-  
+
   .containerNarrow {
     padding: 20px 16px;
   }
@@ -259,19 +259,19 @@
   .container {
     padding: 0 16px;
   }
-  
+
   .heroTitle {
     font-size: 2rem;
   }
-  
+
   .heroSection {
     padding: 30px 0 20px 0;
   }
-  
+
   .section {
     padding: 30px 0;
   }
-  
+
   .primaryButton,
   .secondaryButton {
     padding: 14px 28px;

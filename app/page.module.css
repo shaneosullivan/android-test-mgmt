@@ -1,38 +1,38 @@
 /* Import shared theme styles */
-@import './shared-theme.module.css';
+@import "./shared-theme.module.css";
 
 .page {
-  composes: pageBackground from './shared-theme.module.css';
+  composes: pageBackground from "./shared-theme.module.css";
 }
 
 .main {
-  composes: container from './shared-theme.module.css';
+  composes: container from "./shared-theme.module.css";
 }
 
 /* Hero Section */
 .hero {
-  composes: heroSection from './shared-theme.module.css';
+  composes: heroSection from "./shared-theme.module.css";
 }
 
 .title {
-  composes: heroTitle from './shared-theme.module.css';
+  composes: heroTitle from "./shared-theme.module.css";
 }
 
 .subtitle {
-  composes: heroSubtitle from './shared-theme.module.css';
+  composes: heroSubtitle from "./shared-theme.module.css";
 }
 
 .ctaButton {
-  composes: primaryButton from './shared-theme.module.css';
+  composes: primaryButton from "./shared-theme.module.css";
 }
 
 /* Features Section */
 .features {
-  composes: section from './shared-theme.module.css';
+  composes: section from "./shared-theme.module.css";
 }
 
 .sectionTitle {
-  composes: sectionTitle from './shared-theme.module.css';
+  composes: sectionTitle from "./shared-theme.module.css";
 }
 
 .featureGrid {
@@ -143,7 +143,7 @@
 }
 
 .ctaButtonSecondary {
-  composes: secondaryButton from './shared-theme.module.css';
+  composes: secondaryButton from "./shared-theme.module.css";
 }
 
 /* Responsive Design */
@@ -151,40 +151,40 @@
   .title {
     font-size: 2.5rem;
   }
-  
+
   .subtitle {
     font-size: 1.1rem;
   }
-  
+
   .hero {
     padding: 40px 0 30px 0;
   }
-  
+
   .features {
     padding: 40px 0;
   }
-  
+
   .benefits {
     padding: 30px 0;
   }
-  
+
   .finalCta {
     padding: 40px 0;
   }
-  
+
   .featureGrid {
     gap: 32px;
     padding: 0 8px;
   }
-  
+
   .sectionTitle {
     font-size: 2rem;
   }
-  
+
   .ctaTitle {
     font-size: 2rem;
   }
-  
+
   .featureGrid {
     grid-template-columns: 1fr;
     gap: 32px;
@@ -195,42 +195,42 @@
   .main {
     padding: 0 16px;
   }
-  
+
   .title {
     font-size: 2rem;
   }
-  
+
   .hero {
     padding: 40px 0 30px 0;
   }
-  
+
   .subtitle {
     font-size: 1rem;
     margin: 0 0 24px 0;
     padding: 0 8px;
   }
-  
+
   .features {
     padding: 30px 0;
   }
-  
+
   .benefits {
     padding: 30px 0;
   }
-  
+
   .benefitsList {
     padding: 0 8px;
   }
-  
+
   .finalCta {
     padding: 30px 0;
   }
-  
+
   .featureGrid {
     gap: 16px;
     padding: 0 4px;
   }
-  
+
   .feature {
     padding: 16px 20px;
     min-height: auto;
@@ -238,24 +238,24 @@
     text-align: left;
     align-items: flex-start;
   }
-  
+
   .featureIcon {
     font-size: 1.8rem;
     margin-bottom: 0;
     margin-right: 16px;
     flex-shrink: 0;
   }
-  
+
   .featureContent {
     display: flex;
     flex-direction: column;
   }
-  
+
   .featureTitle {
     margin: 0 0 6px 0;
     font-size: 1.2rem;
   }
-  
+
   .ctaButton,
   .ctaButtonSecondary {
     padding: 14px 28px;

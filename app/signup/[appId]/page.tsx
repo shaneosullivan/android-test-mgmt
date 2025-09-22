@@ -1,18 +1,21 @@
-import { getApp, getTesterByEmail } from '@/util/firebase-admin';
-import styles from './page.module.css';
+import { getApp, getTesterByEmail } from "@/util/firebase-admin";
+import styles from "./page.module.css";
 
 interface SignupPageProps {
   params: Promise<{ appId: string }>;
-  searchParams: Promise<{ 
-    email?: string; 
-    existing?: string; 
-    success?: string; 
+  searchParams: Promise<{
+    email?: string;
+    existing?: string;
+    success?: string;
     code?: string;
     error?: string;
   }>;
 }
 
-export default async function SignupPage({ params, searchParams }: SignupPageProps) {
+export default async function SignupPage({
+  params,
+  searchParams,
+}: SignupPageProps) {
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
   const { appId } = resolvedParams;
@@ -20,7 +23,7 @@ export default async function SignupPage({ params, searchParams }: SignupPagePro
 
   try {
     const app = await getApp(appId);
-    
+
     if (!app) {
       return (
         <div className={styles.container}>
@@ -45,27 +48,27 @@ export default async function SignupPage({ params, searchParams }: SignupPagePro
 
           <div className={styles.disclaimer}>
             <p>
-              <strong>Disclaimer:</strong> This service is not affiliated with Google. 
-              We simply make it easier for you to sign up to the app developer's Google Group 
-              and receive your promotional code if applicable.
+              <strong>Disclaimer:</strong> This service is not affiliated with
+              Google. We simply make it easier for you to sign up to the app
+              developer's Google Group and receive your promotional code if
+              applicable.
             </p>
           </div>
 
           <div className={styles.step}>
             <h3>✅ You're All Set!</h3>
-            
+
             <div className={styles.success}>
-              {existing ? 
-                `Welcome back! ${code ? `Your promotional code: ${code}` : 'You can download the app below.'}` :
-                `Welcome! ${code ? `Your promotional code: ${code}` : 'You are now registered for testing.'}`
-              }
+              {existing
+                ? `Welcome back! ${code ? `Your promotional code: ${code}` : "You can download the app below."}`
+                : `Welcome! ${code ? `Your promotional code: ${code}` : "You are now registered for testing."}`}
             </div>
 
             <div className={styles.downloadSection}>
               <h4>Download the App</h4>
               <p>You can now download the app from the Google Play Store:</p>
-              
-              <a 
+
+              <a
                 href={app.playStoreUrl}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -78,16 +81,18 @@ export default async function SignupPage({ params, searchParams }: SignupPagePro
             {code && (
               <div className={styles.codeSection}>
                 <h4>Your Promotional Code</h4>
-                <div className={styles.promotionalCode}>
-                  {code}
-                </div>
-                <p>Keep this code safe - you can return to this page anytime to retrieve it.</p>
+                <div className={styles.promotionalCode}>{code}</div>
+                <p>
+                  Keep this code safe - you can return to this page anytime to
+                  retrieve it.
+                </p>
               </div>
             )}
 
             <div className={styles.returnSection}>
               <p>
-                <strong>Returning tester?</strong> Enter your email below to retrieve your promotional code.
+                <strong>Returning tester?</strong> Enter your email below to
+                retrieve your promotional code.
               </p>
               <form action={`/signup/${appId}`} method="GET">
                 <input
@@ -118,15 +123,16 @@ export default async function SignupPage({ params, searchParams }: SignupPagePro
 
           <div className={styles.disclaimer}>
             <p>
-              <strong>Disclaimer:</strong> This service is not affiliated with Google. 
-              We simply make it easier for you to sign up to the app developer's Google Group 
-              and receive your promotional code if applicable.
+              <strong>Disclaimer:</strong> This service is not affiliated with
+              Google. We simply make it easier for you to sign up to the app
+              developer's Google Group and receive your promotional code if
+              applicable.
             </p>
           </div>
 
           <div className={styles.step}>
             <h3>Your Testing Access</h3>
-            
+
             <div className={styles.success}>
               You're already registered for testing!
             </div>
@@ -134,8 +140,8 @@ export default async function SignupPage({ params, searchParams }: SignupPagePro
             <div className={styles.downloadSection}>
               <h4>Download the App</h4>
               <p>You can download the app from the Google Play Store:</p>
-              
-              <a 
+
+              <a
                 href={app.playStoreUrl}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -175,9 +181,10 @@ export default async function SignupPage({ params, searchParams }: SignupPagePro
 
           <div className={styles.disclaimer}>
             <p>
-              <strong>Disclaimer:</strong> This service is not affiliated with Google. 
-              We simply make it easier for you to sign up to the app developer's Google Group 
-              and receive your promotional code if applicable.
+              <strong>Disclaimer:</strong> This service is not affiliated with
+              Google. We simply make it easier for you to sign up to the app
+              developer's Google Group and receive your promotional code if
+              applicable.
             </p>
           </div>
 
@@ -185,7 +192,7 @@ export default async function SignupPage({ params, searchParams }: SignupPagePro
             <div className={styles.error}>
               There was an error processing your request. Please try again.
             </div>
-            
+
             <a href={`/signup/${appId}`} className={styles.returnButton}>
               Try Again
             </a>
@@ -202,15 +209,14 @@ export default async function SignupPage({ params, searchParams }: SignupPagePro
           <h2>{app.appName}</h2>
         </header>
 
-
         <div className={styles.step}>
           <h3>Step 1: Join the Google Group</h3>
           <p>
-            To test this app, you need to join our beta testing Google Group. 
+            To test this app, you need to join our beta testing Google Group.
             Click the button below to join:
           </p>
-          
-          <a 
+
+          <a
             href={`mailto:${app.googleGroupEmail}?subject=Join%20Beta%20Testing%20Group`}
             className={styles.groupButton}
             target="_blank"
@@ -220,19 +226,17 @@ export default async function SignupPage({ params, searchParams }: SignupPagePro
           </a>
 
           <p className={styles.instruction}>
-            After joining the group (it may take a few minutes to be approved), 
+            After joining the group (it may take a few minutes to be approved),
             enter your email below to get access:
           </p>
 
           <h4>Step 2: Enter Your Email</h4>
-          <p>
-            Enter the same email address you used to join the Google Group:
-          </p>
+          <p>Enter the same email address you used to join the Google Group:</p>
 
           <form action="/api/testers" method="POST" className={styles.form}>
             <input type="hidden" name="appId" value={appId} />
             <input type="hidden" name="hasJoinedGroup" value="true" />
-            
+
             <input
               type="email"
               name="email"
@@ -240,7 +244,7 @@ export default async function SignupPage({ params, searchParams }: SignupPagePro
               placeholder="your-email@example.com"
               className={styles.emailInput}
             />
-            
+
             <button type="submit" className={styles.submitButton}>
               Get Access
             </button>
@@ -249,7 +253,8 @@ export default async function SignupPage({ params, searchParams }: SignupPagePro
 
         <div className={styles.returnSection}>
           <p>
-            <strong>Returning tester?</strong> Enter your email to retrieve your promotional code:
+            <strong>Returning tester?</strong> Enter your email to retrieve your
+            promotional code:
           </p>
           <form action={`/signup/${appId}`} method="GET">
             <input

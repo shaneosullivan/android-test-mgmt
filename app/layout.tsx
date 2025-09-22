@@ -15,7 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Android Beta Testing - Simplify Your App Testing",
-  description: "Automate Google Group management and promotional code distribution for your Android app's beta testing program.",
+  description:
+    "Automate Google Group management and promotional code distribution for your Android app's beta testing program.",
 };
 
 export default function RootLayout({

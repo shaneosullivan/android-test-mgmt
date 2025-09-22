@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import styles from './Header.module.css';
+import Link from "next/link";
+import styles from "./Header.module.css";
 
 function Header() {
   return (

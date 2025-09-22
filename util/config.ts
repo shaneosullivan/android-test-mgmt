@@ -11,7 +11,7 @@ export function validateConfig(): ConfigValidationResult {
   // Firebase Admin SDK environment variables
   const firebaseVars = [
     "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
-    "GOOGLE_SERVICE_ACCOUNT_EMAIL", 
+    "GOOGLE_SERVICE_ACCOUNT_EMAIL",
     "GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY",
   ];
 
@@ -26,7 +26,9 @@ export function validateConfig(): ConfigValidationResult {
   const allRequiredVars = [...firebaseVars, ...oauthVars];
 
   const missing = allRequiredVars.filter((varName) => !process.env[varName]);
-  const missingFirebase = firebaseVars.filter((varName) => !process.env[varName]);
+  const missingFirebase = firebaseVars.filter(
+    (varName) => !process.env[varName]
+  );
   const missingOAuth = oauthVars.filter((varName) => !process.env[varName]);
 
   return {
