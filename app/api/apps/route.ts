@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createApp } from "@/util/firebase-admin";
+import { createApp } from "@/lib/firebase";
 import { redirect } from "next/navigation";
 
 function parsePromotionalCodes(csvText: string): string[] {

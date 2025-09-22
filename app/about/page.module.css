@@ -1,0 +1,90 @@
+/* Import shared theme styles */
+@import "../shared-theme.module.css";
+
+.page {
+  composes: pageBackground from "../shared-theme.module.css";
+}
+
+.container {
+  composes: containerNarrow from "../shared-theme.module.css";
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  color: white;
+}
+
+.header p {
+  font-size: 1.1rem;
+  margin: 0;
+  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.section {
+  composes: sectionPadded from "../shared-theme.module.css";
+  margin-bottom: 32px;
+}
+
+.section h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: #1a202c;
+}
+
+.section p {
+  line-height: 1.6;
+  margin: 0 0 16px 0;
+  color: #1a202c;
+}
+
+.section p:last-child {
+  margin-bottom: 0;
+}
+
+.link {
+  color: #1e3a8a;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.link:hover {
+  color: #1e40af;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.homeButton {
+  composes: primaryButton from "../shared-theme.module.css";
+}
+
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 2rem;
+  }
+
+  .header p {
+    font-size: 1rem;
+  }
+
+  .section {
+    padding: 20px;
+  }
+
+  .section h2 {
+    font-size: 1.3rem;
+  }
+}

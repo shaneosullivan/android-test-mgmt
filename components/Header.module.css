@@ -16,12 +16,18 @@
 
 .logo {
   text-decoration: none;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   transition: opacity 0.3s ease;
 }
 
 .logo:hover {
   opacity: 0.8;
+}
+
+.logoImage {
+  flex-shrink: 0;
 }
 
 .title {
@@ -37,6 +43,10 @@
 @media (max-width: 768px) {
   .container {
     padding: 0 16px;
+  }
+
+  .logo {
+    gap: 8px;
   }
 
   .title {

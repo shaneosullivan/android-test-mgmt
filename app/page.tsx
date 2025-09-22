@@ -2,7 +2,7 @@ import Link from "next/link";
 import styles from "./page.module.css";
 import { validateConfig } from "@/util/config";
 import { redirect } from "next/navigation";
-import { adminDb } from "@/lib/firebase-admin";
+import { adminDb } from "@/lib/firebase";
 
 export default function Home() {
   const config = validateConfig();

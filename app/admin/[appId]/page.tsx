@@ -1,4 +1,4 @@
-import { getApp, getTestersForApp } from "@/util/firebase-admin";
+import { getApp, getTestersForApp } from "@/lib/firebase";
 import { getSessionFromCookie } from "@/util/auth";
 import { APP_URL_BASE } from "@/lib/consts";
 import CopyButton from "./copy-button";

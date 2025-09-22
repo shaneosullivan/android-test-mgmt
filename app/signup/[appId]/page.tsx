@@ -1,4 +1,4 @@
-import { getApp, getTesterByEmail } from "@/util/firebase-admin";
+import { getApp, getTesterByEmail } from "@/lib/firebase";
 import styles from "./page.module.css";
 
 interface SignupPageProps {

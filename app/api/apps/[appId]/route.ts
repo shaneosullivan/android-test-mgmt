@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getApp, getTestersForApp } from "@/util/firebase-admin";
+import { getApp, getTestersForApp } from "@/lib/firebase";
 
 export async function GET(
   request: NextRequest,

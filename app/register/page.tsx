@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { adminDb } from "@/lib/firebase-admin";
+import { adminDb } from "@/lib/firebase";
 import { getSessionFromCookie } from "@/util/auth";
 import { validateConfig } from "@/util/config";
 import AuthButton from "./auth-button";

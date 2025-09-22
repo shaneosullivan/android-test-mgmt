@@ -3,7 +3,7 @@ import {
   addTester,
   getTesterByEmail,
   assignPromotionalCode,
-} from "@/util/firebase-admin";
+} from "@/lib/firebase";
 import { redirect } from "next/navigation";
 
 export async function POST(request: NextRequest) {
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Assign promotional code if available
-    const promotionalCode = await assignPromotionalCode(appId, email);
+    const promotionalCode = await assignPromotionalCode(appId);
 
     // Create new tester
     await addTester({

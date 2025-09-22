@@ -1,6 +1,50 @@
-import { adminDb } from "@/lib/firebase-admin";
+import { initializeApp, getApps, cert } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
+import { validateConfig } from "@/util/config";
 import { FIRESTORE_COLLECTIONS } from "@/lib/consts";
 
+// Firebase Admin initialization
+function initializeFirebaseAdmin() {
+  if (getApps().length > 0) {
+    return getApps()[0];
+  }
+
+  const config = validateConfig();
+
+  if (!config.isValid) {
+    throw new Error(
+      `Missing environment variables: ${config.missing.join(", ")}`
+    );
+  }
+
+  const privateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY!.replace(
+    /\\n/g,
+    "\n"
+  );
+
+  return initializeApp({
+    credential: cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      privateKey: privateKey,
+    }),
+    projectId: process.env.FIREBASE_PROJECT_ID,
+  });
+}
+
+let adminApp: ReturnType<typeof initializeFirebaseAdmin> | null = null;
+let adminDb: ReturnType<typeof getFirestore> | null = null;
+
+try {
+  adminApp = initializeFirebaseAdmin();
+  adminDb = getFirestore(adminApp);
+} catch (error) {
+  console.error("Firebase Admin initialization failed:", error);
+  adminApp = null;
+  adminDb = null;
+}
+
+// Type definitions
 export interface AppData {
   id: string;
   googleGroupEmail: string;
@@ -20,6 +64,7 @@ export interface TesterData {
   hasJoinedGroup: boolean;
 }
 
+// Database functions
 export async function createApp(
   appData: Omit<AppData, "id" | "createdAt">
 ): Promise<string> {
@@ -111,8 +156,7 @@ export async function updateTester(
 }
 
 export async function assignPromotionalCode(
-  appId: string,
-  email: string
+  appId: string
 ): Promise<string | null> {
   if (!adminDb) throw new Error("Firebase Admin not initialized");
 
@@ -139,3 +183,6 @@ async function getUsedPromotionalCodes(appId: string): Promise<Set<string>> {
       .filter((code): code is string => Boolean(code))
   );
 }
+
+// Export the admin instances for direct use if needed
+export { adminApp, adminDb };

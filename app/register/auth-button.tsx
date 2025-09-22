@@ -1,6 +1,7 @@
 "use client";
 
 import { UserSession } from "@/util/auth";
+import { handleSignIn, handleSignOut } from "@/lib/auth-utils";
 import styles from "./page.module.css";
 
 interface AuthButtonProps {
@@ -10,18 +11,8 @@ interface AuthButtonProps {
 function AuthButton(props: AuthButtonProps) {
   const { session } = props;
 
-  const handleSignIn = () => {
-    window.location.href =
-      "/api/auth/google?returnTo=" + encodeURIComponent("/register");
-  };
-
-  const handleSignOut = async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-      window.location.reload();
-    } catch (error) {
-      console.error("Sign out failed:", error);
-    }
+  const onSignIn = () => {
+    handleSignIn("/register");
   };
 
   if (session) {
@@ -59,7 +50,7 @@ function AuthButton(props: AuthButtonProps) {
       <button
         type="button"
         className={styles.googleSignInButton}
-        onClick={handleSignIn}
+        onClick={onSignIn}
       >
         <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
           <path

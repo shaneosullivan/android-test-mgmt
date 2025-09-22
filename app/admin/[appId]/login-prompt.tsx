@@ -1,5 +1,6 @@
 "use client";
 
+import { handleSignIn } from "@/lib/auth-utils";
 import styles from "./page.module.css";
 
 interface LoginPromptProps {
@@ -9,10 +10,9 @@ interface LoginPromptProps {
 function LoginPrompt(props: LoginPromptProps) {
   const { appId } = props;
 
-  const handleSignIn = () => {
+  const onSignIn = () => {
     const returnTo = `/admin/${appId}`;
-    window.location.href =
-      "/api/auth/google?returnTo=" + encodeURIComponent(returnTo);
+    handleSignIn(returnTo);
   };
 
   return (
@@ -24,7 +24,7 @@ function LoginPrompt(props: LoginPromptProps) {
           You must sign in with Google to access this admin page. Please use the
           same Google account that administers the Google Group for this app.
         </p>
-        <button className={styles.googleSignInButton} onClick={handleSignIn}>
+        <button className={styles.googleSignInButton} onClick={onSignIn}>
           <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
             <path
               fill="#4285F4"
