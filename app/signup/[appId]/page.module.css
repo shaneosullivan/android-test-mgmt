@@ -1,0 +1,269 @@
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: var(--font-geist-sans);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--gray-600);
+}
+
+.step {
+  padding: 32px 24px;
+  border: 1px solid var(--gray-alpha-200);
+  border-radius: 12px;
+  background: var(--background);
+}
+
+.step h3 {
+  margin: 0 0 16px 0;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.step h4 {
+  margin: 24px 0 12px 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.step p {
+  margin: 0 0 16px 0;
+  line-height: 1.6;
+  color: var(--foreground);
+}
+
+.groupButton {
+  display: inline-block;
+  padding: 16px 32px;
+  background: #4285f4;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 16px;
+  margin: 16px 0;
+  transition: background 0.2s;
+}
+
+.groupButton:hover {
+  background: #3367d6;
+}
+
+.continueButton {
+  padding: 12px 24px;
+  background: var(--foreground);
+  color: var(--background);
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 16px;
+}
+
+.continueButton:hover {
+  background: var(--button-primary-hover);
+}
+
+.instruction {
+  font-size: 14px;
+  color: var(--gray-600);
+  font-style: italic;
+  margin: 24px 0 16px 0 !important;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.emailInput {
+  padding: 12px 16px;
+  border: 1px solid var(--gray-alpha-200);
+  border-radius: 8px;
+  font-size: 16px;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.emailInput:focus {
+  outline: none;
+  border-color: var(--foreground);
+}
+
+.submitButton {
+  padding: 12px 24px;
+  background: var(--foreground);
+  color: var(--background);
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: var(--button-primary-hover);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.success {
+  padding: 16px;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  color: #15803d;
+  font-weight: 500;
+  margin: 16px 0;
+}
+
+.error {
+  padding: 16px;
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  color: #dc2626;
+  font-weight: 500;
+  margin: 16px 0;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: var(--gray-600);
+}
+
+.downloadSection {
+  margin: 24px 0;
+  padding: 20px;
+  background: var(--gray-alpha-100);
+  border-radius: 8px;
+}
+
+.playStoreButton {
+  display: inline-block;
+  padding: 16px 32px;
+  background: #01875f;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 16px;
+  margin: 12px 0;
+  transition: background 0.2s;
+}
+
+.playStoreButton:hover {
+  background: #016a4a;
+}
+
+.codeSection {
+  margin: 24px 0;
+  padding: 20px;
+  background: var(--gray-alpha-100);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.promotionalCode {
+  font-family: var(--font-geist-mono);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--foreground);
+  background: var(--background);
+  padding: 16px 24px;
+  border-radius: 8px;
+  border: 2px solid var(--foreground);
+  margin: 12px 0;
+  letter-spacing: 2px;
+}
+
+.returnSection {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--gray-alpha-200);
+  text-align: center;
+}
+
+.returnButton {
+  padding: 8px 16px;
+  background: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--gray-alpha-200);
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 12px;
+}
+
+.returnButton:hover {
+  background: var(--gray-alpha-100);
+}
+
+@media (prefers-color-scheme: dark) {
+  .success {
+    background: #052e16;
+    border-color: #15803d;
+    color: #86efac;
+  }
+
+  .error {
+    background: #450a0a;
+    border-color: #dc2626;
+    color: #fca5a5;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 20px 16px;
+  }
+
+  .header h1 {
+    font-size: 24px;
+  }
+
+  .step {
+    padding: 24px 16px;
+  }
+
+  .groupButton,
+  .playStoreButton {
+    display: block;
+    text-align: center;
+  }
+
+  .promotionalCode {
+    font-size: 18px;
+    padding: 12px 16px;
+  }
+}
