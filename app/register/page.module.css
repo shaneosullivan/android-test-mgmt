@@ -1,0 +1,371 @@
+.page {
+  grid-template-rows: 20px 1fr 20px;
+  align-items: center;
+  justify-items: center;
+  min-height: 100svh;
+  padding: 40px;
+  gap: 64px;
+  font-family: var(--font-geist-sans);
+  background: #1e3a8a;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  grid-row-start: 2;
+  max-width: 600px;
+  width: 100%;
+}
+
+.main h1 {
+  color: white;
+  text-align: center;
+  margin: 0 0 8px 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.main p {
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  margin: 0 0 24px 0;
+}
+
+.disclaimer {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #fefce8;
+  border: 1px solid #facc15;
+  border-radius: 8px;
+}
+
+.disclaimer p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #713f12;
+}
+
+.disclaimer strong {
+  color: #92400e;
+}
+
+.authNotice {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #dbeafe;
+  border: 1px solid #3b82f6;
+  border-radius: 8px;
+}
+
+.authNotice p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1e40af;
+}
+
+.authNotice strong {
+  color: #1d4ed8;
+}
+
+.authSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.googleSignInButton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  background: white;
+  color: #333;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.googleSignInButton:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-color: #c1c7cd;
+}
+
+.googleSignInButton:active {
+  transform: translateY(1px);
+}
+
+.authHelp {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  text-align: center;
+  margin: 0;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userDetails {
+  flex: 1;
+}
+
+.userName {
+  color: white;
+  font-weight: 500;
+  margin: 0 0 4px 0;
+  font-size: 16px;
+}
+
+.userEmail {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  margin: 0;
+}
+
+.signOutButton {
+  padding: 8px 16px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.signOutButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.formDisabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.formDisabled::before {
+  content: "🔒 Sign in with Google first to register your app";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(30, 58, 138, 0.95);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  z-index: 10;
+  white-space: nowrap;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  position: relative;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field label {
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.field small {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: normal;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.field input,
+.field textarea {
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 16px;
+  background: white;
+  color: #1a202c;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: #1e3a8a;
+}
+
+.submitButton {
+  padding: 12px 24px;
+  background: white;
+  color: #1e3a8a;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: #f8fafc;
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  padding: 12px;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  color: #991b1b;
+  font-size: 14px;
+}
+
+.uploadOption {
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.uploadLabel {
+  font-size: 14px;
+  color: white;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.fileInput {
+  flex: 1;
+  font-size: 14px;
+  color: white;
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 16px;
+    padding-top: 32px;
+    padding-bottom: 80px;
+    gap: 32px;
+  }
+
+  .main {
+    align-items: center;
+    gap: 24px;
+  }
+
+  .main h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+
+  .main p {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+
+  .disclaimer {
+    margin-bottom: 16px;
+    padding: 12px;
+  }
+
+  .disclaimer p {
+    font-size: 13px;
+  }
+
+  .authNotice {
+    margin-bottom: 16px;
+    padding: 12px;
+  }
+
+  .authNotice p {
+    font-size: 13px;
+  }
+
+  .form {
+    gap: 20px;
+  }
+
+  .field input,
+  .field textarea {
+    font-size: 16px;
+    padding: 14px 16px;
+  }
+
+  .uploadOption {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .uploadLabel {
+    font-size: 13px;
+  }
+
+  .fileInput {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .submitButton {
+    padding: 14px 24px;
+    font-size: 16px;
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding: 12px;
+    padding-top: 24px;
+  }
+
+  .main h1 {
+    font-size: 1.75rem;
+  }
+
+  .field input,
+  .field textarea {
+    padding: 12px 14px;
+  }
+}

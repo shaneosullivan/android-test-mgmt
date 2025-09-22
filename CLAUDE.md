@@ -47,3 +47,8 @@ afplay /System/Library/Sounds/Funk.aiff
 ```
 
 Also play that sound if you need my input for anything, including if you need me to choose between options.
+
+## Testing
+
+When using the playwright MCP server, the dev server is at http://localhost:3016
+Always ensure that text is legible.

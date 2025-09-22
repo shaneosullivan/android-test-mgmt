@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 .last_modified_timestamp
+config/firebase-key.json
+firebase.env
+.playwright-mcp/

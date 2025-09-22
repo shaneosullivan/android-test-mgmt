@@ -3,12 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "PORT=3016 next dev --turbopack",
+    "kill-port": "lsof -ti:3016 | xargs kill -9 || true",
+    "dev": "npm run kill-port && PORT=3016 source firebase.env && next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start"
   },
   "dependencies": {
-    "firebase": "^12.3.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "firebase-admin": "^13.5.0",
+    "google-auth-library": "^10.3.0",
+    "jsonwebtoken": "^9.0.2",
     "next": "15.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0"

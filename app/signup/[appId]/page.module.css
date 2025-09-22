@@ -1,8 +1,17 @@
+/* Add page background */
+body {
+  background: #1e3a8a;
+  min-height: 100vh;
+  font-family: var(--font-geist-sans);
+}
+
 .container {
   max-width: 600px;
   margin: 0 auto;
   padding: 40px 20px;
   font-family: var(--font-geist-sans);
+  background: #1e3a8a;
+  min-height: 100vh;
 }
 
 .header {
@@ -14,41 +23,42 @@
   margin: 0 0 8px 0;
   font-size: 28px;
   font-weight: 600;
-  color: var(--foreground);
+  color: white;
 }
 
 .header h2 {
   margin: 0;
   font-size: 20px;
   font-weight: 400;
-  color: var(--gray-600);
+  color: rgba(255, 255, 255, 0.8);
 }
+
 
 .step {
   padding: 32px 24px;
-  border: 1px solid var(--gray-alpha-200);
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
-  background: var(--background);
+  background: white;
 }
 
 .step h3 {
   margin: 0 0 16px 0;
   font-size: 20px;
   font-weight: 500;
-  color: var(--foreground);
+  color: #1a202c;
 }
 
 .step h4 {
   margin: 24px 0 12px 0;
   font-size: 16px;
   font-weight: 500;
-  color: var(--foreground);
+  color: #1a202c;
 }
 
 .step p {
   margin: 0 0 16px 0;
   line-height: 1.6;
-  color: var(--foreground);
+  color: #1a202c;
 }
 
 .groupButton {
@@ -87,7 +97,7 @@
 
 .instruction {
   font-size: 14px;
-  color: var(--gray-600);
+  color: #4a5568;
   font-style: italic;
   margin: 24px 0 16px 0 !important;
 }
@@ -101,22 +111,22 @@
 
 .emailInput {
   padding: 12px 16px;
-  border: 1px solid var(--gray-alpha-200);
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   font-size: 16px;
-  background: var(--background);
-  color: var(--foreground);
+  background: white;
+  color: #1a202c;
 }
 
 .emailInput:focus {
   outline: none;
-  border-color: var(--foreground);
+  border-color: #1e3a8a;
 }
 
 .submitButton {
   padding: 12px 24px;
-  background: var(--foreground);
-  color: var(--background);
+  background: #1e3a8a;
+  color: white;
   border: none;
   border-radius: 8px;
   font-size: 16px;
@@ -126,7 +136,7 @@
 }
 
 .submitButton:hover:not(:disabled) {
-  background: var(--button-primary-hover);
+  background: #1e40af;
 }
 
 .submitButton:disabled {
@@ -158,13 +168,13 @@
   text-align: center;
   padding: 40px;
   font-size: 16px;
-  color: var(--gray-600);
+  color: #4a5568;
 }
 
 .downloadSection {
   margin: 24px 0;
   padding: 20px;
-  background: var(--gray-alpha-100);
+  background: #f8fafc;
   border-radius: 8px;
 }
 
@@ -188,7 +198,7 @@
 .codeSection {
   margin: 24px 0;
   padding: 20px;
-  background: var(--gray-alpha-100);
+  background: #f8fafc;
   border-radius: 8px;
   text-align: center;
 }
@@ -197,11 +207,11 @@
   font-family: var(--font-geist-mono);
   font-size: 24px;
   font-weight: 600;
-  color: var(--foreground);
-  background: var(--background);
+  color: #1a202c;
+  background: white;
   padding: 16px 24px;
   border-radius: 8px;
-  border: 2px solid var(--foreground);
+  border: 2px solid #1e3a8a;
   margin: 12px 0;
   letter-spacing: 2px;
 }
@@ -209,39 +219,27 @@
 .returnSection {
   margin-top: 32px;
   padding-top: 24px;
-  border-top: 1px solid var(--gray-alpha-200);
+  border-top: 1px solid #e2e8f0;
   text-align: center;
 }
 
 .returnButton {
   padding: 8px 16px;
   background: transparent;
-  color: var(--foreground);
-  border: 1px solid var(--gray-alpha-200);
+  color: #1a202c;
+  border: 1px solid #e2e8f0;
   border-radius: 6px;
   font-size: 14px;
   cursor: pointer;
   transition: background 0.2s;
   margin-top: 12px;
+  text-decoration: none;
 }
 
 .returnButton:hover {
-  background: var(--gray-alpha-100);
+  background: #f8fafc;
 }
 
-@media (prefers-color-scheme: dark) {
-  .success {
-    background: #052e16;
-    border-color: #15803d;
-    color: #86efac;
-  }
-
-  .error {
-    background: #450a0a;
-    border-color: #dc2626;
-    color: #fca5a5;
-  }
-}
 
 @media (max-width: 768px) {
   .container {

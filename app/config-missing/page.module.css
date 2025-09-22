@@ -4,6 +4,8 @@
   padding: 40px 20px;
   font-family: var(--font-geist-sans);
   line-height: 1.6;
+  background: #1e3a8a;
+  min-height: 100vh;
 }
 
 .header {
@@ -15,33 +17,33 @@
   margin: 0 0 8px 0;
   font-size: 32px;
   font-weight: 600;
-  color: #dc2626;
+  color: white;
 }
 
 .header p {
   margin: 0;
-  color: var(--gray-600);
+  color: rgba(255, 255, 255, 0.8);
   font-size: 16px;
 }
 
 .section {
   margin-bottom: 48px;
   padding: 24px;
-  border: 1px solid var(--gray-alpha-200);
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
-  background: var(--background);
+  background: white;
 }
 
 .section h2 {
   margin: 0 0 16px 0;
   font-size: 20px;
   font-weight: 500;
-  color: var(--foreground);
+  color: #1a202c;
 }
 
 .section p {
   margin: 0 0 16px 0;
-  color: var(--foreground);
+  color: #1a202c;
 }
 
 .section ol,
@@ -182,19 +184,33 @@
   font-size: 14px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .envVar h3 {
-    color: #10b981;
-  }
-
-  .instructions a {
-    color: #60a5fa;
-  }
-
-  .instructions a:hover {
-    color: #3b82f6;
-  }
+.configured {
+  border: 2px solid #10b981;
+  background: #f0fdf4;
 }
+
+.configured h3 {
+  color: #065f46;
+}
+
+.notConfigured {
+  border: 2px solid #f59e0b;
+  background: #fffbeb;
+}
+
+.notConfigured h3 {
+  color: #92400e;
+}
+
+.configuredMessage {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: #d1fae5;
+  border-radius: 6px;
+  color: #065f46;
+  font-size: 14px;
+}
+
 
 @media (max-width: 768px) {
   .container {

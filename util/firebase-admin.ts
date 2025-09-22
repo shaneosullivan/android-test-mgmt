@@ -1,5 +1,4 @@
-import { db } from '@/lib/firebase';
-import { collection, doc, setDoc, getDoc, updateDoc, query, where, getDocs, addDoc } from 'firebase/firestore';
+import { adminDb } from '@/lib/firebase-admin';
 import { FIRESTORE_COLLECTIONS } from '@/lib/consts';
 
 export interface AppData {
@@ -22,9 +21,10 @@ export interface TesterData {
 }
 
 export async function createApp(appData: Omit<AppData, 'id' | 'createdAt'>): Promise<string> {
-  if (!db) throw new Error('Firebase not initialized');
+  if (!adminDb) throw new Error('Firebase Admin not initialized');
   
-  const docRef = await addDoc(collection(db, FIRESTORE_COLLECTIONS.APPS), {
+  const docRef = adminDb.collection(FIRESTORE_COLLECTIONS.APPS).doc();
+  await docRef.set({
     ...appData,
     createdAt: new Date()
   });
@@ -33,23 +33,24 @@ export async function createApp(appData: Omit<AppData, 'id' | 'createdAt'>): Pro
 }
 
 export async function getApp(appId: string): Promise<AppData | null> {
-  if (!db) throw new Error('Firebase not initialized');
+  if (!adminDb) throw new Error('Firebase Admin not initialized');
   
-  const docRef = doc(db, FIRESTORE_COLLECTIONS.APPS, appId);
-  const docSnap = await getDoc(docRef);
+  const docRef = adminDb.collection(FIRESTORE_COLLECTIONS.APPS).doc(appId);
+  const doc = await docRef.get();
   
-  if (!docSnap.exists()) return null;
+  if (!doc.exists) return null;
   
   return {
-    id: docSnap.id,
-    ...docSnap.data()
+    id: doc.id,
+    ...doc.data()
   } as AppData;
 }
 
 export async function addTester(testerData: Omit<TesterData, 'id' | 'joinedAt'>): Promise<string> {
-  if (!db) throw new Error('Firebase not initialized');
+  if (!adminDb) throw new Error('Firebase Admin not initialized');
   
-  const docRef = await addDoc(collection(db, FIRESTORE_COLLECTIONS.TESTERS), {
+  const docRef = adminDb.collection(FIRESTORE_COLLECTIONS.TESTERS).doc();
+  await docRef.set({
     ...testerData,
     joinedAt: new Date()
   });
@@ -58,19 +59,18 @@ export async function addTester(testerData: Omit<TesterData, 'id' | 'joinedAt'>)
 }
 
 export async function getTesterByEmail(email: string, appId: string): Promise<TesterData | null> {
-  if (!db) throw new Error('Firebase not initialized');
+  if (!adminDb) throw new Error('Firebase Admin not initialized');
   
-  const q = query(
-    collection(db, FIRESTORE_COLLECTIONS.TESTERS), 
-    where('email', '==', email),
-    where('appId', '==', appId)
-  );
+  const snapshot = await adminDb
+    .collection(FIRESTORE_COLLECTIONS.TESTERS)
+    .where('email', '==', email)
+    .where('appId', '==', appId)
+    .limit(1)
+    .get();
   
-  const querySnapshot = await getDocs(q);
+  if (snapshot.empty) return null;
   
-  if (querySnapshot.empty) return null;
-  
-  const doc = querySnapshot.docs[0];
+  const doc = snapshot.docs[0];
   return {
     id: doc.id,
     ...doc.data()
@@ -78,30 +78,28 @@ export async function getTesterByEmail(email: string, appId: string): Promise<Te
 }
 
 export async function getTestersForApp(appId: string): Promise<TesterData[]> {
-  if (!db) throw new Error('Firebase not initialized');
+  if (!adminDb) throw new Error('Firebase Admin not initialized');
   
-  const q = query(
-    collection(db, FIRESTORE_COLLECTIONS.TESTERS),
-    where('appId', '==', appId)
-  );
+  const snapshot = await adminDb
+    .collection(FIRESTORE_COLLECTIONS.TESTERS)
+    .where('appId', '==', appId)
+    .get();
   
-  const querySnapshot = await getDocs(q);
-  
-  return querySnapshot.docs.map(doc => ({
+  return snapshot.docs.map(doc => ({
     id: doc.id,
     ...doc.data()
   })) as TesterData[];
 }
 
 export async function updateTester(testerId: string, updates: Partial<TesterData>): Promise<void> {
-  if (!db) throw new Error('Firebase not initialized');
+  if (!adminDb) throw new Error('Firebase Admin not initialized');
   
-  const docRef = doc(db, FIRESTORE_COLLECTIONS.TESTERS, testerId);
-  await updateDoc(docRef, updates);
+  const docRef = adminDb.collection(FIRESTORE_COLLECTIONS.TESTERS).doc(testerId);
+  await docRef.update(updates);
 }
 
 export async function assignPromotionalCode(appId: string, email: string): Promise<string | null> {
-  if (!db) throw new Error('Firebase not initialized');
+  if (!adminDb) throw new Error('Firebase Admin not initialized');
   
   const app = await getApp(appId);
   if (!app || !app.promotionalCodes || app.promotionalCodes.length === 0) {
@@ -115,7 +113,7 @@ export async function assignPromotionalCode(appId: string, email: string): Promi
 }
 
 async function getUsedPromotionalCodes(appId: string): Promise<Set<string>> {
-  if (!db) throw new Error('Firebase not initialized');
+  if (!adminDb) throw new Error('Firebase Admin not initialized');
   
   const testers = await getTestersForApp(appId);
   return new Set(testers.map(t => t.promotionalCode).filter((code): code is string => Boolean(code)));

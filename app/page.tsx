@@ -1,129 +1,128 @@
-'use client';
-
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { createApp } from '@/util/firebase';
-import styles from './page.module.css';
-
-function parsePromotionalCodes(csvText: string): string[] {
-  if (!csvText.trim()) return [];
-  
-  return csvText
-    .split(/[\n,]/)
-    .map(code => code.trim())
-    .filter(code => code.length > 0);
-}
+import Link from "next/link";
+import styles from "./page.module.css";
+import { validateConfig } from "@/util/config";
+import { redirect } from "next/navigation";
+import { adminDb } from "@/lib/firebase-admin";
 
 export default function Home() {
-  const router = useRouter();
-  const [formData, setFormData] = useState({
-    appName: '',
-    googleGroupEmail: '',
-    playStoreUrl: '',
-    promotionalCodes: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError('');
-
-    try {
-      const promotionalCodesArray = parsePromotionalCodes(formData.promotionalCodes);
-      
-      const appId = await createApp({
-        appName: formData.appName,
-        googleGroupEmail: formData.googleGroupEmail,
-        playStoreUrl: formData.playStoreUrl,
-        promotionalCodes: promotionalCodesArray.length > 0 ? promotionalCodesArray : undefined,
-        ownerId: 'temp-owner-id'
-      });
-
-      router.push(`/admin/${appId}`);
-    } catch (err) {
-      if (err instanceof Error && err.message.includes('Missing environment variables')) {
-        router.push('/config-missing');
-      } else {
-        setError('Failed to create app. Please try again.');
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
+  const config = validateConfig();
+  if (!config.isValid || !adminDb) {
+    redirect("/config-missing");
   }
-
-  function handleChange(field: string, value: string) {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  }
-
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <h1>Android Testing Promotion Setup</h1>
-        <p>Set up your app for beta testing distribution</p>
+        {/* Hero Section */}
+        <section className={styles.hero}>
+          <h1 className={styles.title}>Simplify Android App Beta Testing</h1>
+          <p className={styles.subtitle}>
+            Automate Google Group management and promotional code distribution
+            for your Android app's beta testing program
+          </p>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.field}>
-            <label htmlFor="appName">App Name</label>
-            <input
-              id="appName"
-              type="text"
-              required
-              value={formData.appName}
-              onChange={(e) => handleChange('appName', e.target.value)}
-              placeholder="My Awesome App"
-            />
+          <Link href="/register" className={styles.ctaButton}>
+            Register Your App Now
+          </Link>
+        </section>
+
+        {/* Features Section */}
+        <section className={styles.features}>
+          <h2 className={styles.sectionTitle}>How It Works</h2>
+
+          <div className={styles.featureGrid}>
+            <div className={styles.feature}>
+              <div className={styles.featureIcon}>📝</div>
+              <div className={styles.featureContent}>
+                <h3 className={styles.featureTitle}>Register Your App</h3>
+                <p className={styles.featureDescription}>
+                  Add your app details, Google Group, and promotional codes in
+                  minutes
+                </p>
+              </div>
+            </div>
+
+            <div className={styles.feature}>
+              <div className={styles.featureIcon}>👥</div>
+              <div className={styles.featureContent}>
+                <h3 className={styles.featureTitle}>Share Signup Link</h3>
+                <p className={styles.featureDescription}>
+                  Get a custom link to share with potential beta testers
+                </p>
+              </div>
+            </div>
+
+            <div className={styles.feature}>
+              <div className={styles.featureIcon}>🎟️</div>
+              <div className={styles.featureContent}>
+                <h3 className={styles.featureTitle}>
+                  Automatic Code Distribution
+                </h3>
+                <p className={styles.featureDescription}>
+                  Promotional codes are automatically assigned to testers as
+                  they join
+                </p>
+              </div>
+            </div>
+
+            <div className={styles.feature}>
+              <div className={styles.featureIcon}>📊</div>
+              <div className={styles.featureContent}>
+                <h3 className={styles.featureTitle}>Track Progress</h3>
+                <p className={styles.featureDescription}>
+                  Monitor tester signups and code distribution from your admin
+                  dashboard
+                </p>
+              </div>
+            </div>
           </div>
+        </section>
 
-          <div className={styles.field}>
-            <label htmlFor="googleGroupEmail">Google Group Email</label>
-            <input
-              id="googleGroupEmail"
-              type="email"
-              required
-              value={formData.googleGroupEmail}
-              onChange={(e) => handleChange('googleGroupEmail', e.target.value)}
-              placeholder="beta-testers@googlegroups.com"
-            />
+        {/* Benefits Section */}
+        <section className={styles.benefits}>
+          <h2 className={styles.sectionTitle}>Key Features</h2>
+
+          <div className={styles.benefitsList}>
+            <div className={styles.benefit}>
+              <span className={styles.checkmark}>✓</span>
+              <span>Automated Google Group management</span>
+            </div>
+            <div className={styles.benefit}>
+              <span className={styles.checkmark}>✓</span>
+              <span>Promotional code distribution for paid apps</span>
+            </div>
+            <div className={styles.benefit}>
+              <span className={styles.checkmark}>✓</span>
+              <span>Firebase integration for secure data storage</span>
+            </div>
+            <div className={styles.benefit}>
+              <span className={styles.checkmark}>✓</span>
+              <span>Simple signup flow for your testers</span>
+            </div>
+            <div className={styles.benefit}>
+              <span className={styles.checkmark}>✓</span>
+              <span>Admin dashboard to track all activity</span>
+            </div>
+            <div className={styles.benefit}>
+              <span className={styles.checkmark}>✓</span>
+              <span>CSV upload support for bulk promotional codes</span>
+            </div>
           </div>
+        </section>
 
-          <div className={styles.field}>
-            <label htmlFor="playStoreUrl">Play Store URL</label>
-            <input
-              id="playStoreUrl"
-              type="url"
-              required
-              value={formData.playStoreUrl}
-              onChange={(e) => handleChange('playStoreUrl', e.target.value)}
-              placeholder="https://play.google.com/store/apps/details?id=com.example.app"
-            />
-          </div>
+        {/* CTA Section */}
+        <section className={styles.finalCta}>
+          <h2 className={styles.ctaTitle}>
+            Ready to streamline your beta testing?
+          </h2>
+          <p className={styles.ctaSubtext}>
+            Set up your Android app for beta testing distribution in under 5
+            minutes
+          </p>
 
-          <div className={styles.field}>
-            <label htmlFor="promotionalCodes">
-              Promotional Codes (optional)
-              <small>Enter codes separated by commas or newlines</small>
-            </label>
-            <textarea
-              id="promotionalCodes"
-              value={formData.promotionalCodes}
-              onChange={(e) => handleChange('promotionalCodes', e.target.value)}
-              placeholder="CODE1, CODE2, CODE3"
-              rows={4}
-            />
-          </div>
-
-          {error && <div className={styles.error}>{error}</div>}
-
-          <button 
-            type="submit" 
-            disabled={isSubmitting}
-            className={styles.submitButton}
-          >
-            {isSubmitting ? 'Creating...' : 'Create App'}
-          </button>
-        </form>
+          <Link href="/register" className={styles.ctaButtonSecondary}>
+            Get Started Now
+          </Link>
+        </section>
       </main>
     </div>
   );
