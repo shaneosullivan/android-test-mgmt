@@ -36,8 +36,8 @@ export async function GET(request: NextRequest) {
       email: userInfo.email,
       name: userInfo.name,
       picture: userInfo.picture,
-      accessToken: tokens.access_token,
-      refreshToken: tokens.refresh_token,
+      accessToken: tokens.access_token!,
+      refreshToken: tokens.refresh_token || undefined,
     };
 
     // Set session cookie

@@ -3,10 +3,11 @@ import { getApp, getTestersForApp } from '@/util/firebase-admin';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { appId: string } }
+  { params }: { params: Promise<{ appId: string }> }
 ) {
   try {
-    const appId = params.appId;
+    const resolvedParams = await params;
+    const appId = resolvedParams.appId;
     
     const [app, testers] = await Promise.all([
       getApp(appId),

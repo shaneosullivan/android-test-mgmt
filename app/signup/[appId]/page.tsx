@@ -2,19 +2,21 @@ import { getApp, getTesterByEmail } from '@/util/firebase-admin';
 import styles from './page.module.css';
 
 interface SignupPageProps {
-  params: { appId: string };
-  searchParams: { 
+  params: Promise<{ appId: string }>;
+  searchParams: Promise<{ 
     email?: string; 
     existing?: string; 
     success?: string; 
     code?: string;
     error?: string;
-  };
+  }>;
 }
 
 export default async function SignupPage({ params, searchParams }: SignupPageProps) {
-  const { appId } = params;
-  const { email, existing, success, code, error } = searchParams;
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  const { appId } = resolvedParams;
+  const { email, existing, success, code, error } = resolvedSearchParams;
 
   try {
     const app = await getApp(appId);

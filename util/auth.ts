@@ -36,7 +36,7 @@ export function getAuthUrl(state?: string): string {
 }
 
 export async function exchangeCodeForTokens(code: string) {
-  const { tokens } = await client.getAccessToken(code);
+  const { tokens } = await client.getToken(code);
   return tokens;
 }
 

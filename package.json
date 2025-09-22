@@ -6,7 +6,9 @@
     "kill-port": "lsof -ti:3016 | xargs kill -9 || true",
     "dev": "npm run kill-port && PORT=3016 source firebase.env && next dev --turbopack",
     "build": "next build --turbopack",
-    "start": "next start"
+    "start": "next start",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\""
   },
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.10",
@@ -21,6 +23,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "prettier": "^3.6.2",
     "typescript": "^5"
   }
 }

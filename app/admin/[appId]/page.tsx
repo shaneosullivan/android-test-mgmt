@@ -6,11 +6,12 @@ import LoginPrompt from './login-prompt';
 import styles from './page.module.css';
 
 interface AdminPageProps {
-  params: { appId: string };
+  params: Promise<{ appId: string }>;
 }
 
 export default async function AdminPage({ params }: AdminPageProps) {
-  const { appId } = params;
+  const resolvedParams = await params;
+  const { appId } = resolvedParams;
 
   // Check if user is authenticated
   const session = await getSessionFromCookie();
