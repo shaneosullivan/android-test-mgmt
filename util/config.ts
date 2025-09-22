@@ -10,7 +10,7 @@ export interface ConfigValidationResult {
 export function validateConfig(): ConfigValidationResult {
   // Firebase Admin SDK environment variables
   const firebaseVars = [
-    "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
+    "FIREBASE_PROJECT_ID",
     "GOOGLE_SERVICE_ACCOUNT_EMAIL",
     "GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY",
   ];

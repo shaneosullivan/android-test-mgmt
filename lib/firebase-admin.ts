@@ -22,11 +22,11 @@ function initializeFirebaseAdmin() {
 
   return initializeApp({
     credential: cert({
-      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      projectId: process.env.FIREBASE_PROJECT_ID,
       clientEmail: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
       privateKey: privateKey,
     }),
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    projectId: process.env.FIREBASE_PROJECT_ID,
   });
 }
 

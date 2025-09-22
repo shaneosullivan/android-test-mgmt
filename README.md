@@ -49,7 +49,7 @@ set up a Google Group for your testers. These are configured via environment var
 
 - `NEXT_PUBLIC_FIREBASE_API_KEY`: Your Firebase API key.
 - `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`: Your Firebase Auth domain.
-- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`: Your Firebase project ID.
+- `FIREBASE_PROJECT_ID`: Your Firebase project ID.
 - `NEXT_PUBLIC_FIREBASE_APP_ID`: Your Firebase app ID.
 - `GOOGLE_SERVICE_ACCOUNT_EMAIL`: The email address of your Google service account.
 - `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`: The private key of your Google service account.

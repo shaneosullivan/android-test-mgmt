@@ -12,7 +12,7 @@ interface EnvVarConfig {
 
 const ENV_VARS: EnvVarConfig[] = [
   {
-    name: "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
+    name: "FIREBASE_PROJECT_ID",
     description: "Firebase project ID for the testing distribution service.",
     instructions: {
       title: "Setup:",
@@ -197,7 +197,7 @@ export default function ConfigMissingPage() {
               <p>Configure these credentials in your deployment environment:</p>
               <pre className={styles.codeBlock}>
                 {`# Firebase Configuration
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_PROJECT_ID=your-project-id
 GOOGLE_SERVICE_ACCOUNT_EMAIL=your-service-account@project.iam.gserviceaccount.com
 GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\\nYOUR_PRIVATE_KEY_HERE\\n-----END PRIVATE KEY-----\\n"
 
