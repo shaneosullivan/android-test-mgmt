@@ -54,7 +54,7 @@
 
 .section li {
   margin-bottom: 8px;
-  color: var(--foreground);
+  color: #1a202c;
 }
 
 .envVar {
@@ -78,7 +78,7 @@
 
 .envVar p {
   margin: 0 0 12px 0;
-  color: var(--foreground);
+  color: #1a202c;
   font-size: 14px;
 }
 
@@ -87,7 +87,7 @@
 }
 
 .instructions strong {
-  color: var(--foreground);
+  color: #1a202c;
   display: block;
   margin-bottom: 8px;
 }
@@ -119,11 +119,12 @@
   margin: 0 0 12px 0;
   font-size: 18px;
   font-weight: 500;
-  color: var(--foreground);
+  color: var(--text-light);
 }
 
 .setupStep p {
   margin: 0 0 12px 0;
+  color: var(--text-light);
 }
 
 .codeBlock {
@@ -144,36 +145,39 @@
 }
 
 .setupStep li strong {
-  color: var(--foreground);
+  color: var(--text-light);
 }
 
 .footer {
   text-align: center;
   padding: 32px 24px;
-  background: var(--gray-alpha-100);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   margin-top: 40px;
 }
 
 .footer p {
   margin: 0 0 16px 0;
-  color: var(--foreground);
+  color: var(--text-light);
   font-weight: 500;
 }
 
 .homeButton {
   display: inline-block;
   padding: 12px 24px;
-  background: var(--foreground);
-  color: var(--background);
+  background: white;
+  color: #1e3a8a;
   text-decoration: none;
   border-radius: 8px;
   font-weight: 500;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  border: 2px solid white;
 }
 
 .homeButton:hover {
-  background: var(--button-primary-hover);
+  background: #f8fafc;
+  transform: translateY(-2px);
 }
 
 .inlineCode {

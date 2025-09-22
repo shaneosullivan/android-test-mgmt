@@ -222,6 +222,29 @@
   color: #1a202c;
 }
 
+.colorLight {
+  color: var(--text-light);
+}
+
+.colorLightMuted {
+  color: var(--text-light-muted);
+}
+
+/* Ensure text on dark blue backgrounds is light colored */
+.pageBackground * {
+  color: var(--text-light);
+}
+
+/* Keep card content dark since cards have white backgrounds */
+.pageBackground .card *,
+.pageBackground .section *,
+.pageBackground .sectionPadded *,
+.pageBackground .successMessage *,
+.pageBackground .errorMessage *,
+.pageBackground .warningMessage * {
+  color: #1a202c;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .heroTitle {
