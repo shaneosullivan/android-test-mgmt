@@ -15,7 +15,7 @@ function SignOutButton(props: SignOutButtonProps) {
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
-    
+
     try {
       const response = await fetch("/api/auth/signout", {
         method: "POST",

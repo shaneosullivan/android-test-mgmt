@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React from "react";
 
@@ -22,14 +22,14 @@ function AppIcon(props: AppIconProps) {
         style={{
           width: size,
           height: size,
-          borderRadius: '12px',
-          objectFit: 'cover',
-          border: '1px solid #e5e7eb'
+          borderRadius: "12px",
+          objectFit: "cover",
+          border: "1px solid #e5e7eb",
         }}
         onError={(e) => {
           // Fallback to letter icon if image fails to load
           const target = e.target as HTMLImageElement;
-          const fallback = document.createElement('div');
+          const fallback = document.createElement("div");
           fallback.className = `app-icon-fallback ${className}`;
           fallback.style.cssText = `
             width: ${size}px;
@@ -56,20 +56,20 @@ function AppIcon(props: AppIconProps) {
   // Fallback with first letter
   const firstLetter = appName.charAt(0).toUpperCase();
   return (
-    <div 
+    <div
       className={`app-icon-fallback ${className}`}
       style={{
         width: size,
         height: size,
-        backgroundColor: '#3b82f6',
-        borderRadius: '12px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        backgroundColor: "#3b82f6",
+        borderRadius: "12px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         fontSize: size * 0.4,
-        fontWeight: 'bold',
-        color: 'white',
-        border: '1px solid #2563eb'
+        fontWeight: "bold",
+        color: "white",
+        border: "1px solid #2563eb",
       }}
       title={appName}
     >

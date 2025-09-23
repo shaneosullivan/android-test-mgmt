@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
   const state = searchParams.get("state");
   const returnTo = searchParams.get("returnTo");
   const isConsumerGroup = searchParams.get("consumerGroup") === "true";
-  
+
   // Use state parameter if provided, otherwise fall back to returnTo, then default
   const authState = state || returnTo || "/register";
 
@@ -18,7 +18,8 @@ export async function GET(request: NextRequest) {
       const appId = authState.replace("signup_", "");
       const app = await getApp(appId);
       if (app) {
-        isConsumerGroupFlow = app.googleGroupEmail.endsWith("@googlegroups.com");
+        isConsumerGroupFlow =
+          app.googleGroupEmail.endsWith("@googlegroups.com");
       }
     } catch (error) {
       console.log("Could not determine group type, using full permissions");

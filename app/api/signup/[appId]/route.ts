@@ -10,15 +10,15 @@ export async function GET(
   try {
     const { searchParams } = new URL(request.url);
     const email = searchParams.get("email");
-    
+
     // Check if user is authenticated - if so, this is likely an OAuth callback
     const session = await getSessionFromCookie();
-    
+
     if (session && !email) {
       // This is an OAuth callback redirect - handle signup registration
       return handleSignupRegistration(request, params);
     }
-    
+
     // This is a regular GET request for signup data
     const resolvedParams = await params;
     const appId = resolvedParams.appId;
@@ -96,11 +96,12 @@ async function handleSignupRegistration(
     return redirect(`/signup/${appId}`);
   } catch (error) {
     console.error("Signup registration failed:", error);
-    
+
     // Check if it's a Next.js redirect error (these should be allowed to propagate)
     if (
-      error instanceof Error && 
-      (error.message === "NEXT_REDIRECT" || (error as any).digest?.startsWith("NEXT_REDIRECT"))
+      error instanceof Error &&
+      (error.message === "NEXT_REDIRECT" ||
+        (error as any).digest?.startsWith("NEXT_REDIRECT"))
     ) {
       throw error;
     }

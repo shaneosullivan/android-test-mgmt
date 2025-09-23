@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
         playStoreUrl,
         ownerId: session.email, // Use the actual signed-in user's email
       };
-      
+
       // Only include iconUrl if it's provided and not empty
       if (iconUrl && iconUrl.trim()) {
         appData.iconUrl = iconUrl.trim();

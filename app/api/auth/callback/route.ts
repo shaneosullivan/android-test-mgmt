@@ -53,7 +53,9 @@ export async function GET(request: NextRequest) {
     if (state.startsWith("signup_")) {
       const appId = state.replace("signup_", "");
       // Redirect to the signup API endpoint to register the user
-      return NextResponse.redirect(new URL(`/api/signup/${appId}`, request.url));
+      return NextResponse.redirect(
+        new URL(`/api/signup/${appId}`, request.url)
+      );
     }
 
     // Handle complete flows

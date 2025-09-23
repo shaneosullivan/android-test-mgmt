@@ -27,7 +27,7 @@ export default async function Register(props: RegisterPageProps) {
 
   // Check if user is authenticated
   const session = await getSessionFromCookie();
-  
+
   // Get search parameters
   const searchParams = await props.searchParams;
 
@@ -89,7 +89,9 @@ export default async function Register(props: RegisterPageProps) {
           >
             <div style={{ textAlign: "left" }}>
               <p>Please ensure your URL follows this format:</p>
-              <code>https://play.google.com/store/apps/details?id=com.example.app</code>
+              <code>
+                https://play.google.com/store/apps/details?id=com.example.app
+              </code>
             </div>
           </ErrorBox>
         )}
@@ -100,7 +102,11 @@ export default async function Register(props: RegisterPageProps) {
             message="This Android app has already been registered in our system."
           >
             <div style={{ textAlign: "left" }}>
-              <p>Each Android app can only be registered once. If you are the owner of this app and need to make changes, please contact support or try registering a different version of your app.</p>
+              <p>
+                Each Android app can only be registered once. If you are the
+                owner of this app and need to make changes, please contact
+                support or try registering a different version of your app.
+              </p>
             </div>
           </ErrorBox>
         )}

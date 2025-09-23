@@ -32,7 +32,7 @@ export async function isUserInGoogleGroup(
     if (error.code === 404 || error.status === 404) {
       return false;
     }
-    
+
     // Log other errors but don't throw - we'll assume user is not in group
     console.error("Error checking Google Group membership:", error);
     return false;
@@ -50,13 +50,19 @@ export async function canUserManageGoogleGroup(
   accessToken: string
 ): Promise<boolean> {
   console.log(`Checking if user can manage Google Group: ${groupEmail}`);
-  
+
   // Check if this is a consumer Google Group (ends with @googlegroups.com)
-  if (groupEmail.endsWith('@googlegroups.com')) {
-    console.log(`Consumer Google Group detected (${groupEmail}). Admin Directory API doesn't support consumer groups.`);
-    console.log(`For consumer Google Groups, please ensure you are an owner/manager of the group.`);
-    console.log(`Skipping API verification for consumer group - assuming user has access.`);
-    
+  if (groupEmail.endsWith("@googlegroups.com")) {
+    console.log(
+      `Consumer Google Group detected (${groupEmail}). Admin Directory API doesn't support consumer groups.`
+    );
+    console.log(
+      `For consumer Google Groups, please ensure you are an owner/manager of the group.`
+    );
+    console.log(
+      `Skipping API verification for consumer group - assuming user has access.`
+    );
+
     // For consumer groups, we can't verify through the API, so we assume the user has access
     // The actual permission verification will happen when trying to add members
     return true;
@@ -80,16 +86,21 @@ export async function canUserManageGoogleGroup(
       status: error.status,
       message: error.message,
     });
-    
+
     if (error.code === 404 || error.status === 404) {
       console.error(`Google Workspace group ${groupEmail} not found. Please verify:
 1. The group email is correct
 2. The group exists in your Google Workspace domain
 3. You have admin access to this group`);
     } else if (error.code === 403 || error.status === 403) {
-      console.error(`Access denied to Google Workspace group ${groupEmail}. You need to be a domain administrator.`);
+      console.error(
+        `Access denied to Google Workspace group ${groupEmail}. You need to be a domain administrator.`
+      );
     } else {
-      console.error(`Cannot access Google Workspace group ${groupEmail}:`, error.message || error);
+      console.error(
+        `Cannot access Google Workspace group ${groupEmail}:`,
+        error.message || error
+      );
     }
     return false;
   }
@@ -110,11 +121,17 @@ export async function addUserToGoogleGroup(
   console.log(`Attempting to add user ${userEmail} to group ${groupEmail}`);
 
   // Check if this is a consumer Google Group
-  if (groupEmail.endsWith('@googlegroups.com')) {
-    console.log(`Consumer Google Group detected (${groupEmail}). Admin Directory API cannot add members to consumer groups.`);
-    console.log(`For consumer Google Groups, users must join manually or be invited through Google Groups interface.`);
-    console.log(`Please manually add ${userEmail} to ${groupEmail} or provide them with the group joining link.`);
-    
+  if (groupEmail.endsWith("@googlegroups.com")) {
+    console.log(
+      `Consumer Google Group detected (${groupEmail}). Admin Directory API cannot add members to consumer groups.`
+    );
+    console.log(
+      `For consumer Google Groups, users must join manually or be invited through Google Groups interface.`
+    );
+    console.log(
+      `Please manually add ${userEmail} to ${groupEmail} or provide them with the group joining link.`
+    );
+
     // Return false to indicate we couldn't add them automatically
     // The calling code should handle this case appropriately
     return false;
@@ -122,10 +139,16 @@ export async function addUserToGoogleGroup(
 
   try {
     // First check if user is already in the group (for Workspace groups)
-    const isAlreadyMember = await isUserInGoogleGroup(groupEmail, userEmail, accessToken);
-    
+    const isAlreadyMember = await isUserInGoogleGroup(
+      groupEmail,
+      userEmail,
+      accessToken
+    );
+
     if (isAlreadyMember) {
-      console.log(`User ${userEmail} is already a member of Workspace group ${groupEmail}, skipping add operation`);
+      console.log(
+        `User ${userEmail} is already a member of Workspace group ${groupEmail}, skipping add operation`
+      );
       return true;
     }
 
@@ -143,12 +166,17 @@ export async function addUserToGoogleGroup(
 
     const success = response.status === 200 || response.status === 201;
     if (success) {
-      console.log(`Successfully added user ${userEmail} to Workspace group ${groupEmail}`);
+      console.log(
+        `Successfully added user ${userEmail} to Workspace group ${groupEmail}`
+      );
     }
-    
+
     return success;
   } catch (error: any) {
-    console.error(`Error adding user ${userEmail} to Workspace group ${groupEmail}:`, error);
+    console.error(
+      `Error adding user ${userEmail} to Workspace group ${groupEmail}:`,
+      error
+    );
     return false;
   }
 }

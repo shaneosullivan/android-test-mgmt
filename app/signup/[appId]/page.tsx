@@ -251,7 +251,13 @@ export default async function SignupPage({
     }
 
     // Check if user is already fully registered (has joined group and has promo code)
-    if (isConsumerGroup && session && existingTester && existingTester.hasJoinedGroup && existingTester.promotionalCode) {
+    if (
+      isConsumerGroup &&
+      session &&
+      existingTester &&
+      existingTester.hasJoinedGroup &&
+      existingTester.promotionalCode
+    ) {
       // User is already fully registered, redirect to complete page
       return redirect(`/signup/${appId}/complete?s=${app.appIdSecret}`);
     }
@@ -446,8 +452,9 @@ export default async function SignupPage({
 
     // Check if it's a Next.js redirect error (these should be allowed to propagate)
     if (
-      err instanceof Error && 
-      (err.message === "NEXT_REDIRECT" || (err as any).digest?.startsWith("NEXT_REDIRECT"))
+      err instanceof Error &&
+      (err.message === "NEXT_REDIRECT" ||
+        (err as any).digest?.startsWith("NEXT_REDIRECT"))
     ) {
       throw err;
     }

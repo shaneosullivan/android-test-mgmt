@@ -5,11 +5,11 @@ import { clearSessionCookie } from "@/util/auth";
 export async function POST(request: NextRequest) {
   try {
     await clearSessionCookie();
-    
+
     // Get the redirect URL from form data
     const formData = await request.formData();
     const redirectTo = formData.get("redirectTo") as string;
-    
+
     // Redirect to the specified URL, defaulting to home page
     return redirect(redirectTo || "/");
   } catch (error) {

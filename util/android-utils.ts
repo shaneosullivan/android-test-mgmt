@@ -3,23 +3,28 @@
  * @param playStoreUrl - The full Play Store URL
  * @returns The app ID (e.g., "com.example.app") or null if invalid
  */
-export function extractAppIdFromPlayStoreUrl(playStoreUrl: string): string | null {
+export function extractAppIdFromPlayStoreUrl(
+  playStoreUrl: string
+): string | null {
   try {
     const url = new URL(playStoreUrl);
-    
+
     // Check if it's a valid Play Store URL
-    if (url.hostname !== 'play.google.com') {
+    if (url.hostname !== "play.google.com") {
       return null;
     }
-    
+
     // Extract the app ID from the URL parameters
-    const appId = url.searchParams.get('id');
-    
+    const appId = url.searchParams.get("id");
+
     // Validate that it looks like a valid Android app ID (reverse domain notation)
-    if (appId && /^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$/.test(appId)) {
+    if (
+      appId &&
+      /^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$/.test(appId)
+    ) {
       return appId;
     }
-    
+
     return null;
   } catch (error) {
     return null;

@@ -258,7 +258,10 @@ JWT_SECRET=your-secure-random-string-32-chars-or-more`}
                 <li>Create OAuth 2.0 Client ID in Google Cloud Console</li>
                 <li>Configure authorized origins (your domain)</li>
                 <li>Configure authorized redirect URIs (/api/auth/callback)</li>
-                <li>Enable required OAuth scopes: profile, email, admin.directory.group</li>
+                <li>
+                  Enable required OAuth scopes: profile, email,
+                  admin.directory.group
+                </li>
               </ul>
             </div>
 

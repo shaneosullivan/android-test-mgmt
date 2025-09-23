@@ -30,7 +30,11 @@ function AuthButton(props: AuthButtonProps) {
         </div>
         <form method="POST" action="/api/auth/logout">
           <input type="hidden" name="redirectTo" value="/register" />
-          <Button type="submit" variant="secondary" className={styles.signOutButton}>
+          <Button
+            type="submit"
+            variant="secondary"
+            className={styles.signOutButton}
+          >
             Sign out
           </Button>
         </form>

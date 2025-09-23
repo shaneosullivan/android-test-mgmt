@@ -21,17 +21,22 @@ export interface UserSession {
   refreshToken?: string;
 }
 
-export function getAuthUrl(state?: string, isConsumerGroup: boolean = false): string {
+export function getAuthUrl(
+  state?: string,
+  isConsumerGroup: boolean = false
+): string {
   // Use minimal scopes for consumer groups, full scopes for workspace groups
-  const scopes = isConsumerGroup ? [
-    "https://www.googleapis.com/auth/userinfo.email",
-    "https://www.googleapis.com/auth/userinfo.profile",
-  ] : [
-    "https://www.googleapis.com/auth/userinfo.email",
-    "https://www.googleapis.com/auth/userinfo.profile",
-    "https://www.googleapis.com/auth/admin.directory.group",
-    "https://www.googleapis.com/auth/groups",
-  ];
+  const scopes = isConsumerGroup
+    ? [
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile",
+      ]
+    : [
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile",
+        "https://www.googleapis.com/auth/admin.directory.group",
+        "https://www.googleapis.com/auth/groups",
+      ];
 
   return client.generateAuthUrl({
     access_type: "offline",

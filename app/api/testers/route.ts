@@ -56,21 +56,29 @@ export async function POST(request: NextRequest) {
     try {
       const session = await getSessionFromCookie();
       if (session && session.accessToken) {
-        console.log(`Attempting to add user ${email} to Google Group ${app.googleGroupEmail}`);
+        console.log(
+          `Attempting to add user ${email} to Google Group ${app.googleGroupEmail}`
+        );
         const addedToGroup = await addUserToGoogleGroup(
           app.googleGroupEmail,
           email,
           session.accessToken
         );
         actuallyJoinedGroup = addedToGroup;
-        
+
         if (addedToGroup) {
-          console.log(`Successfully processed Google Group membership for ${email}`);
+          console.log(
+            `Successfully processed Google Group membership for ${email}`
+          );
         } else {
-          console.log(`Failed to add ${email} to Google Group, but continuing with registration`);
+          console.log(
+            `Failed to add ${email} to Google Group, but continuing with registration`
+          );
         }
       } else {
-        console.log(`No authenticated session found for ${email}, skipping Google Group management`);
+        console.log(
+          `No authenticated session found for ${email}, skipping Google Group management`
+        );
       }
     } catch (groupError) {
       console.error("Google Group management failed:", groupError);
