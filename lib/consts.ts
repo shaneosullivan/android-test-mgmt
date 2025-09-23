@@ -1,6 +1,6 @@
 export const FIRESTORE_COLLECTIONS = {
   APPS: "apps",
-  TESTERS: "testers",
+  TESTERS: "testers", // Used as subcollection name within apps
   PROMOTIONAL_CODES: "promotional_codes", // Used as subcollection name
 } as const;
 

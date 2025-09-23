@@ -4,6 +4,7 @@ import { APP_URL_BASE } from "@/lib/consts";
 import CopyButton from "./copy-button";
 import LoginPrompt from "./login-prompt";
 import ErrorBox from "@/components/ErrorBox";
+import AppIcon from "@/components/AppIcon";
 import styles from "./page.module.css";
 
 interface AdminPageProps {
@@ -70,8 +71,13 @@ export default async function AdminPage({ params }: AdminPageProps) {
     return (
       <div className={styles.container}>
         <header className={styles.header}>
-          <h1>{app.appName} - Admin</h1>
-          <p>Manage your beta testing distribution</p>
+          <div className={styles.appIconContainer}>
+            <AppIcon appName={app.appName} iconUrl={app.iconUrl} size={80} />
+          </div>
+          <div className={styles.headerContent}>
+            <h1>{app.appName} - Admin</h1>
+            <p>Manage your beta testing distribution</p>
+          </div>
         </header>
 
         <section className={styles.section}>

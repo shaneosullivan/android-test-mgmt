@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
   const appName = formData.get("appName") as string;
   const googleGroupEmail = formData.get("googleGroupEmail") as string;
   const playStoreUrl = formData.get("playStoreUrl") as string;
+  const iconUrl = formData.get("iconUrl") as string;
   const promotionalCodes = formData.get("promotionalCodes") as string;
   const promotionalCodesFile = formData.get(
     "promotionalCodesFile"
@@ -100,13 +101,20 @@ export async function POST(request: NextRequest) {
 
     let appId;
     try {
+      const appData: any = {
+        appName,
+        googleGroupEmail,
+        playStoreUrl,
+        ownerId: session.email, // Use the actual signed-in user's email
+      };
+      
+      // Only include iconUrl if it's provided and not empty
+      if (iconUrl && iconUrl.trim()) {
+        appData.iconUrl = iconUrl.trim();
+      }
+
       appId = await createApp(
-        {
-          appName,
-          googleGroupEmail,
-          playStoreUrl,
-          ownerId: session.email, // Use the actual signed-in user's email
-        },
+        appData,
         promotionalCodesArray.length > 0 ? promotionalCodesArray : undefined
       );
 

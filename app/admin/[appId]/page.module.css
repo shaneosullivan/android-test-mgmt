@@ -9,7 +9,17 @@
 
 .header {
   margin-bottom: 40px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.appIconContainer {
+  flex-shrink: 0;
+}
+
+.headerContent {
+  flex: 1;
 }
 
 .header h1 {
@@ -199,27 +209,6 @@
   margin-bottom: 2rem;
 }
 
-.googleSignInButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 24px;
-  background: white;
-  color: #333;
-  border: 1px solid #dadce0;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  margin-bottom: 1rem;
-}
-
-.googleSignInButton:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  border-color: #c1c7cd;
-}
 
 .authHelp {
   color: #9ca3af;
@@ -274,6 +263,12 @@
 @media (max-width: 768px) {
   .container {
     padding: 20px 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
   }
 
   .header h1 {

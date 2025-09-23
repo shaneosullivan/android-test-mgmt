@@ -17,6 +17,15 @@ body {
 .header {
   text-align: center;
   margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.appIconContainer {
+  display: flex;
+  justify-content: center;
 }
 
 .header h1 {
@@ -77,7 +86,6 @@ body {
   background: #3367d6;
 }
 
-
 .instruction {
   font-size: 14px;
   color: #4a5568;
@@ -106,7 +114,6 @@ body {
   border-color: #1e3a8a;
 }
 
-
 .success {
   padding: 16px;
   background: #f0fdf4;
@@ -116,8 +123,6 @@ body {
   font-weight: 500;
   margin: 16px 0;
 }
-
-
 
 .loading {
   text-align: center;
@@ -223,6 +228,73 @@ body {
 
 .returnButton:hover {
   background: #f8fafc;
+}
+
+/* Error page styles */
+.errorActions {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.registerAppButton {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #16a34a;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.errorHelpText {
+  margin: 8px 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.homeLink {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
+/* Instructional image container */
+.instructionalImage {
+  cursor: not-allowed;
+  margin: 16px 0;
+  text-align: center;
+}
+
+.instructionalImage img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.instructionalCaption {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 8px;
+  font-style: italic;
+}
+
+/* Code block styling */
+.codeBlock {
+  background: #f1f5f9;
+  padding: 8px 12px;
+  border-radius: 4px;
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  word-break: break-all;
+  font-family: var(--font-geist-mono);
+}
+
+.codeInstructions {
+  margin-top: 12px;
+  font-size: 14px;
 }
 
 @media (max-width: 768px) {

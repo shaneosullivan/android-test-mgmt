@@ -1,13 +1,18 @@
+import { redirect } from "next/navigation";
 import { getApp, getTesterByEmail } from "@/lib/firebase";
+import { getSessionFromCookie } from "@/util/auth";
+import { APP_URL_BASE } from "@/lib/consts";
 import ErrorBox from "@/components/ErrorBox";
 import Button from "@/components/Button";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
+import SignOutButton from "@/components/SignOutButton";
+import AppIcon from "@/components/AppIcon";
 import styles from "./page.module.css";
 
 interface SignupPageProps {
   params: Promise<{ appId: string }>;
   searchParams: Promise<{
     email?: string;
-    existing?: string;
     success?: string;
     code?: string;
     error?: string;
@@ -21,7 +26,7 @@ export default async function SignupPage({
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
   const { appId } = resolvedParams;
-  const { email, existing, success, code, error } = resolvedSearchParams;
+  const { email, success, code, error } = resolvedSearchParams;
 
   try {
     const app = await getApp(appId);
@@ -29,28 +34,19 @@ export default async function SignupPage({
     if (!app) {
       return (
         <div className={styles.container}>
-          <ErrorBox 
+          <ErrorBox
             title="App Not Found"
             message={`The app "${appId}" could not be found. This might be because it hasn't been registered yet, or the URL is incorrect.`}
           >
-            <div style={{ textAlign: "center", marginTop: "20px" }}>
-              <a 
-                href="/register" 
-                style={{ 
-                  display: "inline-block",
-                  padding: "12px 24px",
-                  backgroundColor: "#16a34a",
-                  color: "white",
-                  textDecoration: "none",
-                  borderRadius: "8px",
-                  fontWeight: "500",
-                  marginBottom: "16px"
-                }}
-              >
+            <div className={styles.errorActions}>
+              <a href="/register" className={styles.registerAppButton}>
                 Register Your App
               </a>
-              <p style={{ margin: "8px 0", color: "#6b7280", fontSize: "14px" }}>
-                or <a href="/" style={{ color: "#3b82f6", textDecoration: "underline" }}>return to homepage</a>
+              <p className={styles.errorHelpText}>
+                or{" "}
+                <a href="/" className={styles.homeLink}>
+                  return to homepage
+                </a>
               </p>
             </div>
           </ErrorBox>
@@ -58,8 +54,21 @@ export default async function SignupPage({
       );
     }
 
+    // Check if user is authenticated and if this is a consumer group
+    const session = await getSessionFromCookie();
+    const isConsumerGroup = app.googleGroupEmail.endsWith("@googlegroups.com");
+
+    const completeUrl = `${APP_URL_BASE}/signup/${appId}/complete?s=${app.appIdSecret}`;
+
+    console.log("completeUrl:", completeUrl);
+
+    // Always check for tester status based on session or email param
     let existingTester = null;
-    if (email) {
+    if (session && isConsumerGroup) {
+      // For authenticated users on consumer groups, check their registration status
+      existingTester = await getTesterByEmail(session.email, appId);
+    } else if (email) {
+      // For email lookups (returning testers)
       existingTester = await getTesterByEmail(email, appId);
     }
 
@@ -68,8 +77,13 @@ export default async function SignupPage({
       return (
         <div className={styles.container}>
           <header className={styles.header}>
-            <h1>Join Beta Testing</h1>
-            <h2>{app.appName}</h2>
+            <div className={styles.appIconContainer}>
+              <AppIcon appName={app.appName} iconUrl={app.iconUrl} size={80} />
+            </div>
+            <div>
+              <h1>Join Beta Testing</h1>
+              <h2>{app.appName}</h2>
+            </div>
           </header>
 
           <div className={styles.disclaimer}>
@@ -85,9 +99,7 @@ export default async function SignupPage({
             <h3>✅ You're All Set!</h3>
 
             <div className={styles.success}>
-              {existing
-                ? `Welcome back! ${code ? `Your promotional code: ${code}` : "You can download the app below."}`
-                : `Welcome! ${code ? `Your promotional code: ${code}` : "You are now registered for testing."}`}
+              {`Welcome! ${code ? `Your promotional code: ${code}` : "You are now registered for testing."}`}
             </div>
 
             <div className={styles.downloadSection}>
@@ -138,13 +150,18 @@ export default async function SignupPage({
       );
     }
 
-    // Show existing tester info
-    if (email && existingTester) {
+    // Show existing tester info for email lookups only (not authenticated sessions)
+    if (email && existingTester && !session) {
       return (
         <div className={styles.container}>
           <header className={styles.header}>
-            <h1>Welcome Back!</h1>
-            <h2>{app.appName}</h2>
+            <div className={styles.appIconContainer}>
+              <AppIcon appName={app.appName} iconUrl={app.iconUrl} size={80} />
+            </div>
+            <div>
+              <h1>Welcome Back!</h1>
+              <h2>{app.appName}</h2>
+            </div>
           </header>
 
           <div className={styles.disclaimer}>
@@ -201,8 +218,13 @@ export default async function SignupPage({
       return (
         <div className={styles.container}>
           <header className={styles.header}>
-            <h1>Join Beta Testing</h1>
-            <h2>{app.appName}</h2>
+            <div className={styles.appIconContainer}>
+              <AppIcon appName={app.appName} iconUrl={app.iconUrl} size={80} />
+            </div>
+            <div>
+              <h1>Join Beta Testing</h1>
+              <h2>{app.appName}</h2>
+            </div>
           </header>
 
           <div className={styles.disclaimer}>
@@ -215,7 +237,7 @@ export default async function SignupPage({
           </div>
 
           <div className={styles.step}>
-            <ErrorBox 
+            <ErrorBox
               title="Error Processing Request"
               message="There was an error processing your request. Please try again."
             />
@@ -228,55 +250,163 @@ export default async function SignupPage({
       );
     }
 
+    // Check if user is already fully registered (has joined group and has promo code)
+    if (isConsumerGroup && session && existingTester && existingTester.hasJoinedGroup && existingTester.promotionalCode) {
+      // User is already fully registered, redirect to complete page
+      return redirect(`/signup/${appId}/complete?s=${app.appIdSecret}`);
+    }
+
+    // Show "next steps" for consumer groups after user has signed in and registered
+    if (isConsumerGroup && session && existingTester) {
+      const groupName = app.googleGroupEmail.split("@")[0];
+
+      return (
+        <div className={styles.container}>
+          <header className={styles.header}>
+            <div className={styles.appIconContainer}>
+              <AppIcon appName={app.appName} iconUrl={app.iconUrl} size={80} />
+            </div>
+            <div>
+              <h1>Join Beta Testing</h1>
+              <h2>{app.appName}</h2>
+            </div>
+          </header>
+
+          <div className={styles.step}>
+            <h3>✅ Account Verified</h3>
+            <p>Great! Your email ({session.email}) has been verified.</p>
+
+            <h4>Next Step: Join the Google Group</h4>
+            <p>
+              Now you need to join our Google Group to complete your
+              registration. Click the link below to join:
+            </p>
+
+            <a
+              href={`https://groups.google.com/g/${groupName}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.groupButton}
+            >
+              Join Google Group
+            </a>
+
+            <div className={styles.instructionalImage}>
+              <p className={styles.instructionalCaption}>
+                Example: Click the "Join the group" link when you see the page
+                below after you have clicked the button above.
+              </p>
+              <img
+                src="/images/sign_up_google_group.png"
+                alt="Screenshot showing how to join a Google Group by clicking the 'Join the group' button"
+              />
+            </div>
+
+            <div className={styles.instruction}>
+              <p>
+                <strong>Important:</strong> After joining the group, you'll be
+                shown a welcome message with a link to get your promotional code
+              </p>
+              <p className={styles.codeInstructions}>
+                Click that link to get your promotional code once you've joined
+                the group.
+              </p>
+            </div>
+
+            {session && (
+              <div
+                style={{
+                  textAlign: "center",
+                  marginTop: "24px",
+                  paddingTop: "24px",
+                  borderTop: "1px solid rgba(255,255,255,0.2)",
+                }}
+              >
+                <SignOutButton redirectTo={`/signup/${appId}`} />
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
     // Main signup flow
     return (
       <div className={styles.container}>
         <header className={styles.header}>
-          <h1>Join Beta Testing</h1>
-          <h2>{app.appName}</h2>
+          <div className={styles.appIconContainer}>
+            <AppIcon appName={app.appName} iconUrl={app.iconUrl} size={80} />
+          </div>
+          <div>
+            <h1>Join Beta Testing</h1>
+            <h2>{app.appName}</h2>
+          </div>
         </header>
 
-        <div className={styles.step}>
-          <h3>Step 1: Join the Google Group</h3>
-          <p>
-            To test this app, you need to join our beta testing Google Group.
-            Click the button below to join:
-          </p>
+        {isConsumerGroup ? (
+          // Consumer group flow - require Google Sign In first
+          <div className={styles.step}>
+            <h3>Step 1: Sign In with Google</h3>
+            <p>
+              To join the beta testing for this app, please sign in with your
+              Google account. This will verify your email address for the
+              testing program.
+            </p>
 
-          <a
-            href={`mailto:${app.googleGroupEmail}?subject=Join%20Beta%20Testing%20Group`}
-            className={styles.groupButton}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Join Google Group
-          </a>
-
-          <p className={styles.instruction}>
-            After joining the group (it may take a few minutes to be approved),
-            enter your email below to get access:
-          </p>
-
-          <h4>Step 2: Enter Your Email</h4>
-          <p>Enter the same email address you used to join the Google Group:</p>
-
-          <form action="/api/testers" method="POST" className={styles.form}>
-            <input type="hidden" name="appId" value={appId} />
-            <input type="hidden" name="hasJoinedGroup" value="true" />
-
-            <input
-              type="email"
-              name="email"
-              required
-              placeholder="your-email@example.com"
-              className={styles.emailInput}
+            <GoogleSignInButton
+              returnTo={`signup_${appId}`}
+              isConsumerGroup={isConsumerGroup}
             />
 
-            <Button type="submit">
-              Get Access
-            </Button>
-          </form>
-        </div>
+            <p className={styles.instruction}>
+              After signing in, we'll guide you through joining the Google Group
+              and getting your promotional code.
+            </p>
+          </div>
+        ) : (
+          // Workspace group flow - existing flow
+          <div className={styles.step}>
+            <h3>Step 1: Join the Google Group</h3>
+            <p>
+              To test this app, you need to join our beta testing Google Group.
+              Click the button below to join:
+            </p>
+
+            <a
+              href={`mailto:${app.googleGroupEmail}?subject=Join%20Beta%20Testing%20Group`}
+              className={styles.groupButton}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Join Google Group
+            </a>
+
+            <p className={styles.instruction}>
+              After joining the group (it may take a few minutes to be
+              approved), enter your email below to get access:
+            </p>
+
+            <h4>Step 2: Enter Your Email</h4>
+            <p>
+              Enter the same email address you used to join the Google Group:
+            </p>
+
+            <form action="/api/testers" method="POST" className={styles.form}>
+              <input type="hidden" name="appId" value={appId} />
+              <input type="hidden" name="hasJoinedGroup" value="true" />
+
+              <input
+                type="email"
+                name="email"
+                required
+                placeholder="your-email@example.com"
+                className={styles.emailInput}
+              />
+
+              <Button type="submit">Get Access</Button>
+            </form>
+          </div>
+        )}
 
         <div className={styles.returnSection}>
           <p>
@@ -296,35 +426,47 @@ export default async function SignupPage({
             </Button>
           </form>
         </div>
+
+        {session && (
+          <div
+            style={{
+              textAlign: "center",
+              marginTop: "24px",
+              paddingTop: "24px",
+              borderTop: "1px solid rgba(255,255,255,0.2)",
+            }}
+          >
+            <SignOutButton redirectTo={`/signup/${appId}`} />
+          </div>
+        )}
       </div>
     );
   } catch (err) {
     console.error("Signup page error:", err);
-    
+
+    // Check if it's a Next.js redirect error (these should be allowed to propagate)
+    if (
+      err instanceof Error && 
+      (err.message === "NEXT_REDIRECT" || (err as any).digest?.startsWith("NEXT_REDIRECT"))
+    ) {
+      throw err;
+    }
+
     return (
       <div className={styles.container}>
-        <ErrorBox 
+        <ErrorBox
           title="App Not Found"
           message={`The app "${appId}" could not be found. This might be because it hasn't been registered yet, or the URL is incorrect.`}
         >
-          <div style={{ textAlign: "center", marginTop: "20px" }}>
-            <a 
-              href="/register" 
-              style={{ 
-                display: "inline-block",
-                padding: "12px 24px",
-                backgroundColor: "#16a34a",
-                color: "white",
-                textDecoration: "none",
-                borderRadius: "8px",
-                fontWeight: "500",
-                marginBottom: "16px"
-              }}
-            >
+          <div className={styles.errorActions}>
+            <a href="/register" className={styles.registerAppButton}>
               Register Your App
             </a>
-            <p style={{ margin: "8px 0", color: "#6b7280", fontSize: "14px" }}>
-              or <a href="/" style={{ color: "#3b82f6", textDecoration: "underline" }}>return to homepage</a>
+            <p className={styles.errorHelpText}>
+              or{" "}
+              <a href="/" className={styles.homeLink}>
+                return to homepage
+              </a>
             </p>
           </div>
         </ErrorBox>

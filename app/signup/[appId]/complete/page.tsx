@@ -1,8 +1,13 @@
 import { redirect } from "next/navigation";
-import { getApp, createTester, getTesterByEmail } from "@/lib/firebase";
+import {
+  getApp,
+  getTesterByEmail,
+  updateTester,
+  getAvailablePromotionalCode,
+  redeemPromotionalCode,
+} from "@/lib/firebase";
 import { getSessionFromCookie } from "@/util/auth";
 import ErrorBox from "@/components/ErrorBox";
-import SignInButton from "./sign-in-button";
 import styles from "../page.module.css";
 
 interface CompletePageProps {
@@ -36,7 +41,7 @@ export default async function CompletePage({
     if (!secret || secret !== app.appIdSecret) {
       return (
         <div className={styles.container}>
-          <ErrorBox 
+          <ErrorBox
             title="Permission Denied"
             message="Invalid or missing access token. Please use the correct link from your Google Group welcome message."
           />
@@ -48,38 +53,44 @@ export default async function CompletePage({
     const session = await getSessionFromCookie();
 
     if (!session) {
-      return (
-        <div className={styles.container}>
-          <header className={styles.header}>
-            <h1>Get Your Promotional Code</h1>
-            <h2>{app.appName}</h2>
-          </header>
-
-          <div className={styles.step}>
-            <h3>Sign in to get your promotional code</h3>
-            <p>
-              You need to sign in with your Google account to receive your promotional code.
-            </p>
-            
-            <SignInButton returnTo={`/signup/${appId}/complete?s=${secret}`} />
-          </div>
-        </div>
-      );
+      // User is not authenticated, redirect to signup page
+      return redirect(`/signup/${appId}`);
     }
 
-    // Check if user is already registered
+    // Check if user is already registered for this app
     let existingTester = await getTesterByEmail(session.email, appId);
-    
+
     if (!existingTester) {
-      // Create new tester entry
-      await createTester({
-        email: session.email,
-        appId: appId,
+      // User has a cookie but is not assigned to this app
+      // Redirect them to the signup page for this app
+      return redirect(`/signup/${appId}`);
+    }
+
+    // If the tester doesn't have a promotional code yet, assign one
+    if (!existingTester.promotionalCode) {
+      // Get available promotional code
+      const availableCode = await getAvailablePromotionalCode(appId);
+      let promotionalCode: string | undefined;
+
+      if (availableCode) {
+        // Mark the code as redeemed
+        await redeemPromotionalCode(availableCode.id, session.email, appId);
+        promotionalCode = availableCode.code;
+      }
+
+      // Update existing tester with promotional code and group membership
+      const updates: any = {
         hasJoinedGroup: true, // They're coming from the group welcome message
-        promotionalCode: undefined, // Will be assigned next
-      });
-      
-      // Fetch the newly created tester to get promotional code assignment
+      };
+
+      // Only include promotionalCode if it's not undefined
+      if (promotionalCode !== undefined) {
+        updates.promotionalCode = promotionalCode;
+      }
+
+      await updateTester(existingTester.id, appId, updates);
+
+      // Fetch the updated tester to get promotional code assignment
       existingTester = await getTesterByEmail(session.email, appId);
     }
 
@@ -109,7 +120,7 @@ export default async function CompletePage({
           <div className={styles.downloadSection}>
             <h3>Download the App</h3>
             <p>You can now download the app from the Google Play Store:</p>
-            
+
             <a
               href={app.playStoreUrl}
               target="_blank"
@@ -119,21 +130,13 @@ export default async function CompletePage({
               Download from Play Store
             </a>
           </div>
-
-          <div className={styles.returnSection}>
-            <a href={`/signup/${appId}`} className={styles.returnButton}>
-              ← Back to App Info
-            </a>
-          </div>
         </div>
       </div>
     );
-
   } catch (error) {
-    return (
-      <div className={styles.container}>
-        <ErrorBox title="Failed to process request" />
-      </div>
-    );
+    console.error("Complete page error:", error);
+    // For most errors, redirect back to the signup page
+    // This handles cases where the user/app relationship is problematic
+    return redirect(`/signup/${appId}`);
   }
 }

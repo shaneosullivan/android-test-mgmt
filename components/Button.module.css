@@ -30,13 +30,13 @@
 /* Secondary button */
 .secondary {
   background: transparent;
-  color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #374151;
+  border: 1px solid #d1d5db;
 }
 
 .secondary:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: #f3f4f6;
+  border-color: #9ca3af;
 }
 
 /* Google sign-in button */

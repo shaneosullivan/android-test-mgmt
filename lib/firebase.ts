@@ -3,6 +3,7 @@ import { getFirestore } from "firebase-admin/firestore";
 import { validateConfig } from "@/util/config";
 import { FIRESTORE_COLLECTIONS } from "@/lib/consts";
 import { extractAppIdFromPlayStoreUrl } from "@/util/android-utils";
+import { downloadImageAsBase64 } from "@/util/image-utils";
 
 // Firebase Admin initialization
 function initializeFirebaseAdmin() {
@@ -55,6 +56,7 @@ export interface AppData {
   createdAt: Date;
   appIdSecret: string; // 32 character secret for direct signup links
   isSetupComplete: boolean; // Indicates if app registration completed successfully
+  iconUrl?: string; // Optional app icon URL from Google Play Store
 }
 
 export interface PromotionalCode {
@@ -69,7 +71,7 @@ export interface PromotionalCode {
 export interface TesterData {
   id: string;
   email: string;
-  appId: string;
+  appId: string; // This will be added back when retrieving from subcollection
   promotionalCode?: string;
   joinedAt: Date;
   hasJoinedGroup: boolean;
@@ -106,10 +108,11 @@ export async function deleteApp(appId: string): Promise<void> {
     batch.delete(doc.ref);
   });
 
-  // Delete all testers for this app
+  // Delete all testers for this app (subcollection)
   const testersSnapshot = await adminDb
+    .collection(FIRESTORE_COLLECTIONS.APPS)
+    .doc(appId)
     .collection(FIRESTORE_COLLECTIONS.TESTERS)
-    .where("appId", "==", appId)
     .get();
 
   testersSnapshot.docs.forEach(doc => {
@@ -149,10 +152,32 @@ export async function createApp(
     }
   }
 
+  // Process icon URL if provided - download and convert to base64
+  let processedAppData = { ...appData };
+  if (appData.iconUrl && !appData.iconUrl.startsWith('data:')) {
+    // Only process if it's not already a base64 data URL
+    try {
+      console.log(`Processing icon URL for app: ${androidAppId}`);
+      const base64Icon = await downloadImageAsBase64(appData.iconUrl);
+      if (base64Icon) {
+        processedAppData.iconUrl = base64Icon;
+        console.log(`Successfully processed icon for ${androidAppId}`);
+      } else {
+        console.log(`Failed to process icon for ${androidAppId}, removing iconUrl`);
+        delete processedAppData.iconUrl;
+      }
+    } catch (iconError) {
+      console.error(`Error processing icon for ${androidAppId}:`, iconError);
+      // Remove iconUrl if processing fails
+      delete processedAppData.iconUrl;
+    }
+  }
+
   // Use the Android app ID as the document ID
   const docRef = adminDb.collection(FIRESTORE_COLLECTIONS.APPS).doc(androidAppId);
+  
   await docRef.set({
-    ...appData,
+    ...processedAppData,
     createdAt: new Date(),
     appIdSecret: generateAppIdSecret(),
     isSetupComplete: false, // Will be set to true at the end of successful registration
@@ -185,11 +210,24 @@ export async function addTester(
 ): Promise<string> {
   if (!adminDb) throw new Error("Firebase Admin not initialized");
 
-  const docRef = adminDb.collection(FIRESTORE_COLLECTIONS.TESTERS).doc();
-  await docRef.set({
-    ...testerData,
+  const docRef = adminDb
+    .collection(FIRESTORE_COLLECTIONS.APPS)
+    .doc(testerData.appId)
+    .collection(FIRESTORE_COLLECTIONS.TESTERS)
+    .doc();
+  
+  const dataToSet: any = {
+    email: testerData.email,
+    hasJoinedGroup: testerData.hasJoinedGroup,
     joinedAt: new Date(),
-  });
+  };
+  
+  // Only include promotionalCode if it's not undefined
+  if (testerData.promotionalCode !== undefined) {
+    dataToSet.promotionalCode = testerData.promotionalCode;
+  }
+  
+  await docRef.set(dataToSet);
 
   return docRef.id;
 }
@@ -201,9 +239,10 @@ export async function getTesterByEmail(
   if (!adminDb) throw new Error("Firebase Admin not initialized");
 
   const snapshot = await adminDb
+    .collection(FIRESTORE_COLLECTIONS.APPS)
+    .doc(appId)
     .collection(FIRESTORE_COLLECTIONS.TESTERS)
     .where("email", "==", email)
-    .where("appId", "==", appId)
     .limit(1)
     .get();
 
@@ -212,6 +251,7 @@ export async function getTesterByEmail(
   const doc = snapshot.docs[0];
   return {
     id: doc.id,
+    appId, // Add appId back since it's not stored in the document anymore
     ...doc.data(),
   } as TesterData;
 }
@@ -220,23 +260,28 @@ export async function getTestersForApp(appId: string): Promise<TesterData[]> {
   if (!adminDb) throw new Error("Firebase Admin not initialized");
 
   const snapshot = await adminDb
+    .collection(FIRESTORE_COLLECTIONS.APPS)
+    .doc(appId)
     .collection(FIRESTORE_COLLECTIONS.TESTERS)
-    .where("appId", "==", appId)
     .get();
 
   return snapshot.docs.map((doc) => ({
     id: doc.id,
+    appId, // Add appId back since it's not stored in the document anymore
     ...doc.data(),
   })) as TesterData[];
 }
 
 export async function updateTester(
   testerId: string,
-  updates: Partial<TesterData>
+  appId: string,
+  updates: Partial<Omit<TesterData, "id" | "appId">>
 ): Promise<void> {
   if (!adminDb) throw new Error("Firebase Admin not initialized");
 
   const docRef = adminDb
+    .collection(FIRESTORE_COLLECTIONS.APPS)
+    .doc(appId)
     .collection(FIRESTORE_COLLECTIONS.TESTERS)
     .doc(testerId);
   await docRef.update(updates);
@@ -368,12 +413,24 @@ export async function createTester(
     promotionalCode = availableCode.code;
   }
 
-  const docRef = adminDb.collection(FIRESTORE_COLLECTIONS.TESTERS).doc();
-  await docRef.set({
-    ...testerData,
-    promotionalCode,
+  const docRef = adminDb
+    .collection(FIRESTORE_COLLECTIONS.APPS)
+    .doc(testerData.appId)
+    .collection(FIRESTORE_COLLECTIONS.TESTERS)
+    .doc();
+    
+  const dataToSet: any = {
+    email: testerData.email,
+    hasJoinedGroup: testerData.hasJoinedGroup,
     joinedAt: new Date(),
-  });
+  };
+  
+  // Only include promotionalCode if it's not undefined
+  if (promotionalCode !== undefined) {
+    dataToSet.promotionalCode = promotionalCode;
+  }
+  
+  await docRef.set(dataToSet);
 
   return docRef.id;
 }

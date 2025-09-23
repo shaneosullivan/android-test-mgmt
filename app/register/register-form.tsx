@@ -18,14 +18,55 @@ interface RegisterFormProps {
 function RegisterForm(props: RegisterFormProps) {
   const { session, defaultValues } = props;
   const [groupEmail, setGroupEmail] = useState(defaultValues.googleGroupEmail);
+  const [promotionalCodes, setPromotionalCodes] = useState(defaultValues.promotionalCodes);
+  const [hasFile, setHasFile] = useState(false);
+  const [iconUrl, setIconUrl] = useState("");
+  const [showIconInstructions, setShowIconInstructions] = useState(false);
 
   const isConsumerGroup = groupEmail.endsWith("@googlegroups.com");
+
+  const isValidGooglePlayIconUrl = (url: string): boolean => {
+    if (!url.trim()) return true; // Empty URL is valid (optional field)
+    
+    // Common Google Play Store icon URL patterns and base64 data URLs
+    const patterns = [
+      /^https:\/\/play-lh\.googleusercontent\.com\/.*$/,
+      /^https:\/\/lh3\.googleusercontent\.com\/.*$/,
+      /^data:image\/(png|jpg|jpeg|webp|gif);base64,.*$/
+    ];
+    
+    return patterns.some(pattern => pattern.test(url));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    // Check if both promotional code sources are empty
+    const textAreaEmpty = !promotionalCodes.trim();
+    const fileEmpty = !hasFile;
+    
+    if (textAreaEmpty && fileEmpty) {
+      e.preventDefault();
+      alert("Please provide promotional codes either by entering them in the text area or uploading a CSV file.");
+      return;
+    }
+
+    // Validate icon URL if provided
+    if (iconUrl.trim() && !isValidGooglePlayIconUrl(iconUrl)) {
+      e.preventDefault();
+      alert("Please enter a valid Google Play Store icon URL. Click 'Show Instructions' to learn how to get the correct URL.");
+      return;
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setHasFile(!!e.target.files?.length);
+  };
 
   return (
     <form
       action="/api/apps"
       method="POST"
       encType="multipart/form-data"
+      onSubmit={handleSubmit}
       className={
         session ? styles.form : `${styles.form} ${styles.formDisabled}`
       }
@@ -90,6 +131,41 @@ function RegisterForm(props: RegisterFormProps) {
       </div>
 
       <div className={styles.field}>
+        <label htmlFor="iconUrl">
+          App Icon URL (optional){" "}
+          <button
+            type="button"
+            onClick={() => setShowIconInstructions(!showIconInstructions)}
+            className={styles.instructionToggle}
+          >
+            {showIconInstructions ? "Hide Instructions" : "Show Instructions"}
+          </button>
+        </label>
+        
+        {showIconInstructions && (
+          <div className={styles.instructionsBox}>
+            <h4>How to get your app's icon URL:</h4>
+            <ol>
+              <li>Go to your app's Google Play Store page</li>
+              <li>Right-click on the app icon and select "Copy image address" or "Copy image URL"</li>
+              <li>Paste the URL below</li>
+            </ol>
+            <p><strong>Note:</strong> The URL should start with <code>https://play-lh.googleusercontent.com/</code> or <code>https://lh3.googleusercontent.com/</code></p>
+            <p><em>If left empty, a simple letter-based icon will be shown instead.</em></p>
+          </div>
+        )}
+        
+        <input
+          id="iconUrl"
+          name="iconUrl"
+          type="url"
+          placeholder="https://play-lh.googleusercontent.com/..."
+          value={iconUrl}
+          onChange={(e) => setIconUrl(e.target.value)}
+        />
+      </div>
+
+      <div className={styles.field}>
         <label htmlFor="promotionalCodes">
           Promotional Codes (optional){" "}
           <small>Enter codes manually or upload a CSV file</small>
@@ -99,7 +175,8 @@ function RegisterForm(props: RegisterFormProps) {
           name="promotionalCodes"
           placeholder="CODE1, CODE2, CODE3"
           rows={4}
-          defaultValue={defaultValues.promotionalCodes}
+          value={promotionalCodes}
+          onChange={(e) => setPromotionalCodes(e.target.value)}
         />
         <div className={styles.uploadOption}>
           <span className={styles.uploadLabel}>Or upload CSV file:</span>
@@ -108,6 +185,7 @@ function RegisterForm(props: RegisterFormProps) {
             id="promotionalCodesFile"
             name="promotionalCodesFile"
             accept=".csv"
+            onChange={handleFileChange}
             className={styles.fileInput}
           />
         </div>
