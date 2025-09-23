@@ -90,7 +90,9 @@ function generateAppIdSecret(): string {
 
 // Database functions
 export async function deleteApp(appId: string): Promise<void> {
-  if (!adminDb) throw new Error("Firebase Admin not initialized");
+  if (!adminDb) {
+    throw new Error("Firebase Admin not initialized");
+  }
 
   const batch = adminDb.batch();
 
@@ -137,7 +139,9 @@ export async function createApp(
   >,
   promotionalCodes?: string[]
 ): Promise<string> {
-  if (!adminDb) throw new Error("Firebase Admin not initialized");
+  if (!adminDb) {
+    throw new Error("Firebase Admin not initialized");
+  }
 
   // Extract Android app ID from Play Store URL
   const androidAppId = extractAppIdFromPlayStoreUrl(appData.playStoreUrl);
@@ -211,9 +215,17 @@ export async function getApp(appId: string): Promise<AppData | null> {
 
   if (!doc.exists) return null;
 
+  return convertFirebaseAppData(doc);
+}
+
+function convertFirebaseAppData(
+  doc: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>
+): AppData {
+  const data = doc.data();
   return {
+    ...data,
     id: doc.id,
-    ...doc.data(),
+    createdAt: data?.createdAt.toDate(), // Convert Firestore Timestamp to JS Date
   } as AppData;
 }
 
@@ -352,6 +364,20 @@ export async function addPromotionalCodes(
   return docIds;
 }
 
+function convertFirebasePromotionalCodeData(
+  doc: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>,
+  appId: string
+): PromotionalCode {
+  const data = doc.data();
+  return {
+    ...data,
+    id: doc.id,
+    appId,
+    createdAt: data?.createdAt.toDate(), // Convert Firestore Timestamp to JS Date
+    redeemedAt: data?.redeemedAt ? data.redeemedAt.toDate() : undefined,
+  } as PromotionalCode;
+}
+
 export async function getPromotionalCodesForApp(
   appId: string
 ): Promise<PromotionalCode[]> {
@@ -364,11 +390,9 @@ export async function getPromotionalCodesForApp(
     .orderBy("createdAt", "desc")
     .get();
 
-  return snapshot.docs.map((doc) => ({
-    id: doc.id,
-    appId, // Add appId back since it's not stored in the document anymore
-    ...doc.data(),
-  })) as PromotionalCode[];
+  return snapshot.docs.map((doc) => {
+    return convertFirebasePromotionalCodeData(doc, appId);
+  });
 }
 
 export async function getAvailablePromotionalCode(
@@ -389,11 +413,7 @@ export async function getAvailablePromotionalCode(
 
   if (!unredeemedCode) return null;
 
-  return {
-    id: unredeemedCode.id,
-    appId, // Add appId back since it's not stored in the document anymore
-    ...unredeemedCode.data(),
-  } as PromotionalCode;
+  return convertFirebasePromotionalCodeData(unredeemedCode, appId);
 }
 
 export async function redeemPromotionalCode(

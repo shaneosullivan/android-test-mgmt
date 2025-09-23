@@ -345,3 +345,133 @@
 .setupContent {
   padding-top: 8px;
 }
+
+.codesStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.codeStat {
+  text-align: center;
+  padding: 16px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.codeStatNumber {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 4px;
+}
+
+.codeStatLabel {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.addCodesSection {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 24px;
+}
+
+.addCodesSection h3 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: #1a202c;
+}
+
+.addCodesForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.field label small {
+  font-weight: 400;
+  color: #6b7280;
+}
+
+.textarea {
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: var(--font-geist-sans);
+  resize: vertical;
+  min-height: 100px;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.uploadOption {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.uploadLabel {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.fileInput {
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+}
+
+.successMessage {
+  padding: 12px 16px;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  color: #15803d;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.errorMessage {
+  padding: 12px 16px;
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+  .codesStats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .codeStatNumber {
+    font-size: 20px;
+  }
+}
