@@ -1,4 +1,8 @@
-import { getApp, getTestersForApp, getPromotionalCodesForApp } from "@/lib/firebase";
+import {
+  getApp,
+  getTestersForApp,
+  getPromotionalCodesForApp,
+} from "@/lib/firebase";
 import { getSessionFromCookie } from "@/util/auth";
 import { APP_URL_BASE } from "@/lib/consts";
 import CopyButton from "./copy-button";
@@ -40,12 +44,15 @@ export default async function AdminPage({ params }: AdminPageProps) {
     if (!app.isSetupComplete) {
       return (
         <div className={styles.container}>
-          <ErrorBox 
-            title="App Setup Incomplete" 
+          <ErrorBox
+            title="App Setup Incomplete"
             message="This app registration was not completed successfully. Please try registering your app again."
           >
             <div style={{ textAlign: "center", marginTop: "16px" }}>
-              <a href="/register" style={{ color: "#3b82f6", textDecoration: "underline" }}>
+              <a
+                href="/register"
+                style={{ color: "#3b82f6", textDecoration: "underline" }}
+              >
                 Register App Again
               </a>
             </div>
@@ -60,13 +67,15 @@ export default async function AdminPage({ params }: AdminPageProps) {
     const groupName = app.googleGroupEmail.split("@")[0];
 
     // Calculate statistics
-    const redeemedCodes = promotionalCodes.filter(code => code.redeemedAt);
+    const redeemedCodes = promotionalCodes.filter((code) => code.redeemedAt);
     const stats = {
       totalTesters: testers.length,
       joinedGroup: testers.filter((t) => t.hasJoinedGroup).length,
       codesAssigned: testers.filter((t) => t.promotionalCode).length,
       availableCodes: promotionalCodes.length - redeemedCodes.length,
     };
+
+    console.log("testers", testers);
 
     return (
       <div className={styles.container}>
@@ -220,17 +229,17 @@ export default async function AdminPage({ params }: AdminPageProps) {
     );
   } catch (error) {
     console.error("Admin page error:", error);
-    
+
     return (
       <div className={styles.container}>
-        <ErrorBox 
+        <ErrorBox
           title="App Not Found"
           message={`The app "${appId}" could not be found. This might be because it hasn't been registered yet, or the URL is incorrect.`}
         >
           <div style={{ textAlign: "center", marginTop: "20px" }}>
-            <a 
-              href="/register" 
-              style={{ 
+            <a
+              href="/register"
+              style={{
                 display: "inline-block",
                 padding: "12px 24px",
                 backgroundColor: "#16a34a",
@@ -238,13 +247,19 @@ export default async function AdminPage({ params }: AdminPageProps) {
                 textDecoration: "none",
                 borderRadius: "8px",
                 fontWeight: "500",
-                marginBottom: "16px"
+                marginBottom: "16px",
               }}
             >
               Register Your App
             </a>
             <p style={{ margin: "8px 0", color: "#6b7280", fontSize: "14px" }}>
-              or <a href="/" style={{ color: "#3b82f6", textDecoration: "underline" }}>return to homepage</a>
+              or{" "}
+              <a
+                href="/"
+                style={{ color: "#3b82f6", textDecoration: "underline" }}
+              >
+                return to homepage
+              </a>
             </p>
           </div>
         </ErrorBox>

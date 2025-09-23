@@ -79,8 +79,9 @@ export interface TesterData {
 
 // Utility functions
 function generateAppIdSecret(): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
   for (let i = 0; i < 32; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -104,7 +105,7 @@ export async function deleteApp(appId: string): Promise<void> {
     .collection(FIRESTORE_COLLECTIONS.PROMOTIONAL_CODES)
     .get();
 
-  codesSnapshot.docs.forEach(doc => {
+  codesSnapshot.docs.forEach((doc) => {
     batch.delete(doc.ref);
   });
 
@@ -115,7 +116,7 @@ export async function deleteApp(appId: string): Promise<void> {
     .collection(FIRESTORE_COLLECTIONS.TESTERS)
     .get();
 
-  testersSnapshot.docs.forEach(doc => {
+  testersSnapshot.docs.forEach((doc) => {
     batch.delete(doc.ref);
   });
 
@@ -130,7 +131,10 @@ export async function markAppSetupComplete(appId: string): Promise<void> {
 }
 
 export async function createApp(
-  appData: Omit<AppData, "id" | "createdAt" | "appIdSecret" | "isSetupComplete">,
+  appData: Omit<
+    AppData,
+    "id" | "createdAt" | "appIdSecret" | "isSetupComplete"
+  >,
   promotionalCodes?: string[]
 ): Promise<string> {
   if (!adminDb) throw new Error("Firebase Admin not initialized");
@@ -145,16 +149,20 @@ export async function createApp(
   const existingApp = await getApp(androidAppId);
   if (existingApp) {
     if (!existingApp.isSetupComplete) {
-      console.log(`Found incomplete app ${androidAppId}, cleaning up and recreating`);
+      console.log(
+        `Found incomplete app ${androidAppId}, cleaning up and recreating`
+      );
       await deleteApp(androidAppId);
     } else {
-      throw new Error(`App with ID "${androidAppId}" already exists. Each Android app can only be registered once.`);
+      throw new Error(
+        `App with ID "${androidAppId}" already exists. Each Android app can only be registered once.`
+      );
     }
   }
 
   // Process icon URL if provided - download and convert to base64
   let processedAppData = { ...appData };
-  if (appData.iconUrl && !appData.iconUrl.startsWith('data:')) {
+  if (appData.iconUrl && !appData.iconUrl.startsWith("data:")) {
     // Only process if it's not already a base64 data URL
     try {
       console.log(`Processing icon URL for app: ${androidAppId}`);
@@ -163,7 +171,9 @@ export async function createApp(
         processedAppData.iconUrl = base64Icon;
         console.log(`Successfully processed icon for ${androidAppId}`);
       } else {
-        console.log(`Failed to process icon for ${androidAppId}, removing iconUrl`);
+        console.log(
+          `Failed to process icon for ${androidAppId}, removing iconUrl`
+        );
         delete processedAppData.iconUrl;
       }
     } catch (iconError) {
@@ -174,8 +184,10 @@ export async function createApp(
   }
 
   // Use the Android app ID as the document ID
-  const docRef = adminDb.collection(FIRESTORE_COLLECTIONS.APPS).doc(androidAppId);
-  
+  const docRef = adminDb
+    .collection(FIRESTORE_COLLECTIONS.APPS)
+    .doc(androidAppId);
+
   await docRef.set({
     ...processedAppData,
     createdAt: new Date(),
@@ -215,21 +227,34 @@ export async function addTester(
     .doc(testerData.appId)
     .collection(FIRESTORE_COLLECTIONS.TESTERS)
     .doc();
-  
+
   const dataToSet: any = {
     email: testerData.email,
     hasJoinedGroup: testerData.hasJoinedGroup,
     joinedAt: new Date(),
   };
-  
+
   // Only include promotionalCode if it's not undefined
   if (testerData.promotionalCode !== undefined) {
     dataToSet.promotionalCode = testerData.promotionalCode;
   }
-  
+
   await docRef.set(dataToSet);
 
   return docRef.id;
+}
+
+function convertFirebaseTesterData(
+  doc: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>,
+  appId: string
+): TesterData {
+  const data = doc.data();
+  return {
+    ...data,
+    id: doc.id,
+    appId,
+    joinedAt: data?.joinedAt.toDate(), // Convert Firestore Timestamp to JS Date
+  } as TesterData;
 }
 
 export async function getTesterByEmail(
@@ -249,11 +274,7 @@ export async function getTesterByEmail(
   if (snapshot.empty) return null;
 
   const doc = snapshot.docs[0];
-  return {
-    id: doc.id,
-    appId, // Add appId back since it's not stored in the document anymore
-    ...doc.data(),
-  } as TesterData;
+  return convertFirebaseTesterData(doc, appId);
 }
 
 export async function getTestersForApp(appId: string): Promise<TesterData[]> {
@@ -265,11 +286,9 @@ export async function getTestersForApp(appId: string): Promise<TesterData[]> {
     .collection(FIRESTORE_COLLECTIONS.TESTERS)
     .get();
 
-  return snapshot.docs.map((doc) => ({
-    id: doc.id,
-    appId, // Add appId back since it's not stored in the document anymore
-    ...doc.data(),
-  })) as TesterData[];
+  return snapshot.docs.map((doc) => {
+    return convertFirebaseTesterData(doc, appId);
+  });
 }
 
 export async function updateTester(
@@ -286,7 +305,6 @@ export async function updateTester(
     .doc(testerId);
   await docRef.update(updates);
 }
-
 
 // Promotional code functions
 export async function addPromotionalCode(
@@ -313,7 +331,7 @@ export async function addPromotionalCodes(
   codes: string[]
 ): Promise<string[]> {
   if (!adminDb) throw new Error("Firebase Admin not initialized");
-  
+
   const batch = adminDb.batch();
   const docIds: string[] = [];
 
@@ -367,8 +385,8 @@ export async function getAvailablePromotionalCode(
     .get();
 
   // Filter for unredeemed codes in memory
-  const unredeemedCode = snapshot.docs.find(doc => !doc.data().redeemedAt);
-  
+  const unredeemedCode = snapshot.docs.find((doc) => !doc.data().redeemedAt);
+
   if (!unredeemedCode) return null;
 
   return {
@@ -390,7 +408,7 @@ export async function redeemPromotionalCode(
     .doc(appId)
     .collection(FIRESTORE_COLLECTIONS.PROMOTIONAL_CODES)
     .doc(codeId);
-    
+
   await docRef.update({
     redeemedAt: new Date(),
     redeemedBy,
@@ -409,7 +427,11 @@ export async function createTester(
 
   if (availableCode) {
     // Mark the code as redeemed
-    await redeemPromotionalCode(availableCode.id, testerData.email, testerData.appId);
+    await redeemPromotionalCode(
+      availableCode.id,
+      testerData.email,
+      testerData.appId
+    );
     promotionalCode = availableCode.code;
   }
 
@@ -418,18 +440,18 @@ export async function createTester(
     .doc(testerData.appId)
     .collection(FIRESTORE_COLLECTIONS.TESTERS)
     .doc();
-    
+
   const dataToSet: any = {
     email: testerData.email,
     hasJoinedGroup: testerData.hasJoinedGroup,
     joinedAt: new Date(),
   };
-  
+
   // Only include promotionalCode if it's not undefined
   if (promotionalCode !== undefined) {
     dataToSet.promotionalCode = promotionalCode;
   }
-  
+
   await docRef.set(dataToSet);
 
   return docRef.id;
