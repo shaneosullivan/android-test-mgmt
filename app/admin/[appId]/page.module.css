@@ -304,3 +304,44 @@
     margin-right: 8px;
   }
 }
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.sectionHeader h2 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.completedCheckmark {
+  color: #059669;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.toggleButton {
+  padding: 8px 16px;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toggleButton:hover {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.setupContent {
+  padding-top: 8px;
+}

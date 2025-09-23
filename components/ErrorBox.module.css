@@ -38,3 +38,7 @@
   color: #b91c1c;
   font-weight: 600;
 }
+
+.error a {
+  text-decoration: underline;
+}

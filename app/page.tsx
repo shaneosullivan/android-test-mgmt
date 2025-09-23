@@ -31,6 +31,7 @@ export default function Home() {
 
           <div className={styles.featureGrid}>
             <div className={styles.feature}>
+              <div className={styles.featureNumber}>1</div>
               <div className={styles.featureIcon}>📝</div>
               <div className={styles.featureContent}>
                 <h3 className={styles.featureTitle}>Register Your App</h3>
@@ -42,6 +43,7 @@ export default function Home() {
             </div>
 
             <div className={styles.feature}>
+              <div className={styles.featureNumber}>2</div>
               <div className={styles.featureIcon}>👥</div>
               <div className={styles.featureContent}>
                 <h3 className={styles.featureTitle}>Share Signup Link</h3>
@@ -52,6 +54,7 @@ export default function Home() {
             </div>
 
             <div className={styles.feature}>
+              <div className={styles.featureNumber}>3</div>
               <div className={styles.featureIcon}>🎟️</div>
               <div className={styles.featureContent}>
                 <h3 className={styles.featureTitle}>
@@ -65,6 +68,7 @@ export default function Home() {
             </div>
 
             <div className={styles.feature}>
+              <div className={styles.featureNumber}>4</div>
               <div className={styles.featureIcon}>📊</div>
               <div className={styles.featureContent}>
                 <h3 className={styles.featureTitle}>Track Progress</h3>
@@ -84,7 +88,10 @@ export default function Home() {
           <div className={styles.benefitsList}>
             <div className={styles.benefit}>
               <span className={styles.checkmark}>✓</span>
-              <span>Automated Google Group management</span>
+              <span>
+                Automated Google Group management for Workspace Groups. Also
+                works with public groups
+              </span>
             </div>
             <div className={styles.benefit}>
               <span className={styles.checkmark}>✓</span>
@@ -92,11 +99,9 @@ export default function Home() {
             </div>
             <div className={styles.benefit}>
               <span className={styles.checkmark}>✓</span>
-              <span>Firebase integration for secure data storage</span>
-            </div>
-            <div className={styles.benefit}>
-              <span className={styles.checkmark}>✓</span>
-              <span>Simple signup flow for your testers</span>
+              <span>
+                Just one URL to share for Group sign up and promotional codes
+              </span>
             </div>
             <div className={styles.benefit}>
               <span className={styles.checkmark}>✓</span>
@@ -105,6 +110,10 @@ export default function Home() {
             <div className={styles.benefit}>
               <span className={styles.checkmark}>✓</span>
               <span>CSV upload support for bulk promotional codes</span>
+            </div>
+            <div className={styles.benefit}>
+              <span className={styles.checkmark}>$</span>
+              <span>Free!</span>
             </div>
           </div>
         </section>

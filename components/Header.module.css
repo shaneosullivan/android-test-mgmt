@@ -1,5 +1,5 @@
 .header {
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(30, 58, 138, 0.95);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1.25rem 0;
@@ -27,6 +27,7 @@
 }
 
 .logoImage {
+  border-radius: 4px;
   flex-shrink: 0;
 }
 

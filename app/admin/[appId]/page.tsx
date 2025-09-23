@@ -9,6 +9,7 @@ import CopyButton from "./copy-button";
 import LoginPrompt from "./login-prompt";
 import ErrorBox from "@/components/ErrorBox";
 import AppIcon from "@/components/AppIcon";
+import ConsumerGroupSetup from "./consumer-group-setup";
 import styles from "./page.module.css";
 
 interface AdminPageProps {
@@ -64,7 +65,6 @@ export default async function AdminPage({ params }: AdminPageProps) {
     const signupUrl = `${APP_URL_BASE}/signup/${appId}`;
     const isConsumerGroup = app.googleGroupEmail.endsWith("@googlegroups.com");
     const completeUrl = `${APP_URL_BASE}/signup/${appId}/complete?s=${app.appIdSecret}`;
-    const groupName = app.googleGroupEmail.split("@")[0];
 
     // Calculate statistics
     const redeemedCodes = promotionalCodes.filter((code) => code.redeemedAt);
@@ -135,51 +135,27 @@ export default async function AdminPage({ params }: AdminPageProps) {
         </section>
 
         {isConsumerGroup && (
-          <section className={styles.section}>
-            <h2>🔧 Consumer Group Setup Required</h2>
-            <p>
-              Since you're using a consumer Google Group (
-              <code>{app.googleGroupEmail}</code>), you need to add a welcome
-              message to allow automated signup.
-            </p>
-            <div className={styles.instructions}>
-              <h3>Setup Instructions:</h3>
-              <ol>
-                <li>
-                  Go to your Google Group settings:
-                  <a
-                    href={`https://groups.google.com/g/${groupName}/settings`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.setupLink}
-                  >
-                    https://groups.google.com/g/{groupName}/settings
-                  </a>
-                </li>
-                <li>
-                  Add this text to your "Welcome message":
-                  <div className={styles.welcomeMessage}>
-                    To install the app for free using a promotion code, click
-                    this link {completeUrl}
-                  </div>
-                  <CopyButton
-                    url={`To install the app for free using a promotion code, click this link ${completeUrl}`}
-                  />
-                </li>
-                <li>Save the settings</li>
-              </ol>
-              <p>
-                <strong>How it works:</strong> When testers join your Google
-                Group manually, they'll receive this welcome message with a
-                direct link to get their promotional code.
-              </p>
-            </div>
-          </section>
+          <ConsumerGroupSetup
+            googleGroupEmail={app.googleGroupEmail}
+            completeUrl={completeUrl}
+            hasAssignedCodes={stats.codesAssigned > 0}
+          />
         )}
 
         <section className={styles.section}>
           <h2>Sign-up Link</h2>
-          <p>Share this link with potential testers:</p>
+          <p>
+            Share this link with potential testers
+            {isConsumerGroup && stats.codesAssigned === 0 ? (
+              <>
+                {" "}
+                <strong>
+                  only after setting up your group as explained above
+                </strong>
+              </>
+            ) : null}
+            :
+          </p>
           <div className={styles.urlContainer}>
             <input
               type="text"

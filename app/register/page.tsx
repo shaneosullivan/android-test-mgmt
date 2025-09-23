@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { adminDb } from "@/lib/firebase";
 import { getSessionFromCookie } from "@/util/auth";
 import { validateConfig } from "@/util/config";
+import { extractAppIdFromPlayStoreUrl } from "@/util/android-utils";
 import AuthButton from "./auth-button";
 import RegisterForm from "./register-form";
 import ErrorBox from "@/components/ErrorBox";
@@ -36,26 +37,6 @@ export default async function Register(props: RegisterPageProps) {
       <main className={styles.main}>
         <h1>Register Your Android App</h1>
         <p>Set up your app for beta testing distribution</p>
-
-        <div className={styles.disclaimer}>
-          <p>
-            <strong>Disclaimer:</strong> This service is not affiliated with
-            Google. It simply helps you automate the process of managing Google
-            Groups for beta testing and distributing promotional codes to your
-            testers.
-          </p>
-        </div>
-
-        <div className={styles.authNotice}>
-          <p>
-            <strong>🔐 Authentication Required:</strong> Before registering your
-            app, you must sign in with the same Google account that administers
-            your Google Group. This allows us to verify your permissions and
-            manage group membership on your behalf.
-          </p>
-        </div>
-
-        <AuthButton session={session} />
 
         {searchParams.error === "authentication_required" && (
           <ErrorBox
@@ -96,20 +77,29 @@ export default async function Register(props: RegisterPageProps) {
           </ErrorBox>
         )}
 
-        {searchParams.error === "app_already_exists" && (
-          <ErrorBox
-            title="App Already Registered"
-            message="This Android app has already been registered in our system."
-          >
-            <div style={{ textAlign: "left" }}>
-              <p>
-                Each Android app can only be registered once. If you are the
-                owner of this app and need to make changes, please contact
-                support or try registering a different version of your app.
-              </p>
-            </div>
-          </ErrorBox>
-        )}
+        {searchParams.error === "app_already_exists" &&
+          (() => {
+            const appId = searchParams.playStoreUrl
+              ? extractAppIdFromPlayStoreUrl(searchParams.playStoreUrl)
+              : null;
+            const adminLink = appId ? `/admin/${appId}` : "/admin";
+
+            return (
+              <ErrorBox
+                title="App Already Registered"
+                message="This Android app has already been registered in our system."
+              >
+                <div style={{ textAlign: "left" }}>
+                  <p>
+                    Each Android app can only be registered once. If you are the
+                    owner of this app and need to make changes, please contact
+                    support or use the <a href={adminLink}>Admin Page</a> for
+                    the app. .
+                  </p>
+                </div>
+              </ErrorBox>
+            );
+          })()}
 
         {searchParams.error === "missing_required_fields" && (
           <ErrorBox
@@ -124,6 +114,28 @@ export default async function Register(props: RegisterPageProps) {
             message="There was an unexpected error while registering your app. Please try again or contact support if the problem persists."
           />
         )}
+
+        <div className={styles.disclaimer}>
+          <p>
+            <strong>Disclaimer:</strong> This service is not affiliated with
+            Google. It simply helps you automate the process of managing Google
+            Groups for beta testing and distributing promotional codes to your
+            testers.
+          </p>
+        </div>
+
+        {!session && (
+          <div className={styles.authNotice}>
+            <p>
+              <strong>🔐 Authentication Required:</strong> Before registering
+              your app, you must sign in with the same Google account that
+              administers your Google Group. This allows us to verify your
+              permissions and manage group membership on your behalf.
+            </p>
+          </div>
+        )}
+
+        <AuthButton session={session} />
 
         <RegisterForm
           session={session}

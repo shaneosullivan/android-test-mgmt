@@ -8,6 +8,7 @@ import {
 } from "@/lib/firebase";
 import { getSessionFromCookie } from "@/util/auth";
 import ErrorBox from "@/components/ErrorBox";
+import AppIcon from "@/components/AppIcon";
 import styles from "../page.module.css";
 
 interface CompletePageProps {
@@ -98,8 +99,13 @@ export default async function CompletePage({
     return (
       <div className={styles.container}>
         <header className={styles.header}>
-          <h1>Welcome to Beta Testing!</h1>
-          <h2>{app.appName}</h2>
+          <div className={styles.appIconContainer}>
+            <AppIcon appName={app.appName} iconUrl={app.iconUrl} size={80} />
+          </div>
+          <div className={styles.headerContent}>
+            <h1>Welcome to Beta Testing!</h1>
+            <h2>{app.appName}</h2>
+          </div>
         </header>
 
         <div className={styles.step}>
