@@ -52,3 +52,7 @@ Also play that sound if you need my input for anything, including if you need me
 
 When using the playwright MCP server, the dev server is at http://localhost:3016
 Always ensure that text is legible.
+
+## Formatting
+
+Read the Prettier configuration in `.prettierrc` for formatting rules and apply them consistently.
