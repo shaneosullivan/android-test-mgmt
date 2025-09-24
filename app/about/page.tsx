@@ -72,7 +72,7 @@ export default function About() {
           </p>
           <p>
             <a
-              href="https://github.com/shaneosullivan/android-testing-promo"
+              href="https://github.com/shaneosullivan/android-test-mgmt"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.link}

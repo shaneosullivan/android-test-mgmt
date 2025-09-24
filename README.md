@@ -53,6 +53,10 @@ set up a Google Group for your testers. These are configured via environment var
 - `NEXT_PUBLIC_FIREBASE_APP_ID`: Your Firebase app ID.
 - `GOOGLE_SERVICE_ACCOUNT_EMAIL`: The email address of your Google service account.
 - `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`: The private key of your Google service account.
+- `GOOGLE_REDIRECT_URI`: The redirect URI for Google OAuth2 authentication, e.g. `http://localhost:3016/api/auth/callback` for local development.
+- `JWT_SECRET`: A secret key for signing JWT tokens. Generate a secure random string for this.
+- `TOKEN_ENCRYPTION_KEY`: A base64-encoded 32-byte key for encrypting promotional codes. Generate using `openssl rand -base64 32`.
+- `STRIPE_DONATION_LINK`: (optional) A link to a Stripe donation page created using Payments Links.
 
 If any of these environment variables are missing, redirect to a "/config-missing" page, which
 instructs the user to add them, including instructions on how to do so for each variable.
