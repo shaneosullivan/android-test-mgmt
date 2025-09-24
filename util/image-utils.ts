@@ -93,7 +93,9 @@ export async function downloadImageAsBase64(
 }
 
 export function isValidGooglePlayIconUrl(url: string): boolean {
-  if (!url.trim()) return true; // Empty URL is valid (optional field)
+  if (!url.trim()) {
+    return true; // Empty URL is valid (optional field)
+  }
 
   // Allow both Google Play Store URLs and base64 data URLs
   const patterns = [

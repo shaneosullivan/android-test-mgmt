@@ -42,7 +42,9 @@ function RegisterForm(props: RegisterFormProps) {
     !groupEmail.endsWith("@googlegroups.com");
 
   const isValidGooglePlayIconUrl = (url: string): boolean => {
-    if (!url.trim()) return true; // Empty URL is valid (optional field)
+    if (!url.trim()) {
+      return true; // Empty URL is valid (optional field)
+    }
 
     // Common Google Play Store icon URL patterns and base64 data URLs
     const patterns = [
@@ -228,7 +230,8 @@ function RegisterForm(props: RegisterFormProps) {
                   <p>You can manage this Google Group.</p>
                   {groupValidation.allowsExternalMembers && (
                     <p>
-                      <strong>✅ External users are allowed</strong> - Anyone with the link can join your beta testing.
+                      <strong>✅ External users are allowed</strong> - Anyone
+                      with the link can join your beta testing.
                     </p>
                   )}
                   {!groupValidation.allowsExternalMembers && (

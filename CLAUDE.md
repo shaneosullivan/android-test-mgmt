@@ -56,3 +56,11 @@ Always ensure that text is legible.
 ## Formatting
 
 Read the Prettier configuration in `.prettierrc` for formatting rules and apply them consistently.
+
+When writing `if` statements, always use curly braces for the block, even for single-line statements. For example:
+
+```tsx
+if (condition) {
+  doSomething();
+}
+```

@@ -244,7 +244,9 @@ export async function getApp(appId: string): Promise<AppData | null> {
   const docRef = adminDb.collection(FIRESTORE_COLLECTIONS.APPS).doc(appId);
   const doc = await docRef.get();
 
-  if (!doc.exists) return null;
+  if (!doc.exists) {
+    return null;
+  }
 
   return convertFirebaseAppData(doc);
 }
@@ -314,7 +316,9 @@ export async function getTesterByEmail(
     .limit(1)
     .get();
 
-  if (snapshot.empty) return null;
+  if (snapshot.empty) {
+    return null;
+  }
 
   const doc = snapshot.docs[0];
   return convertFirebaseTesterData(doc, appId);
@@ -442,7 +446,9 @@ export async function getAvailablePromotionalCode(
   // Filter for unredeemed codes in memory
   const unredeemedCode = snapshot.docs.find((doc) => !doc.data().redeemedAt);
 
-  if (!unredeemedCode) return null;
+  if (!unredeemedCode) {
+    return null;
+  }
 
   return convertFirebasePromotionalCodeData(unredeemedCode, appId);
 }

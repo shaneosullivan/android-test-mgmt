@@ -114,7 +114,9 @@ export async function requireAuth(): Promise<UserSession> {
   return session;
 }
 
-export async function refreshAccessToken(refreshToken: string): Promise<string | null> {
+export async function refreshAccessToken(
+  refreshToken: string
+): Promise<string | null> {
   try {
     client.setCredentials({ refresh_token: refreshToken });
     const { credentials } = await client.refreshAccessToken();

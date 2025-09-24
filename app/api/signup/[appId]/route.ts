@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getApp, getTesterByEmail, addTester, getAppOwnerAccessToken } from "@/lib/firebase";
+import {
+  getApp,
+  getTesterByEmail,
+  addTester,
+  getAppOwnerAccessToken,
+} from "@/lib/firebase";
 import { addUserToGoogleGroup } from "@/lib/google-groups";
 import { getSessionFromCookie } from "@/util/auth";
 import { redirect } from "next/navigation";
@@ -88,27 +93,33 @@ async function handleSignupRegistration(
 
     const isConsumerGroup = app.googleGroupEmail.endsWith("@googlegroups.com");
     let hasJoinedGroup = false;
-    
+
     // For Workspace groups, try to automatically add the user to the Google Group
     if (!isConsumerGroup) {
-      console.log(`Attempting to add user ${session.email} to Workspace group ${app.googleGroupEmail}`);
-      
+      console.log(
+        `Attempting to add user ${session.email} to Workspace group ${app.googleGroupEmail}`
+      );
+
       try {
         // Get the app owner's access token
         const ownerAccessToken = await getAppOwnerAccessToken(appId);
-        
+
         if (ownerAccessToken) {
           const addedToGroup = await addUserToGoogleGroup(
             app.googleGroupEmail,
             session.email,
             ownerAccessToken
           );
-          
+
           if (addedToGroup) {
-            console.log(`Successfully added ${session.email} to Workspace group ${app.googleGroupEmail}`);
+            console.log(
+              `Successfully added ${session.email} to Workspace group ${app.googleGroupEmail}`
+            );
             hasJoinedGroup = true;
           } else {
-            console.log(`Failed to add ${session.email} to Workspace group ${app.googleGroupEmail}`);
+            console.log(
+              `Failed to add ${session.email} to Workspace group ${app.googleGroupEmail}`
+            );
           }
         } else {
           console.log(`No owner access token available for app ${appId}`);

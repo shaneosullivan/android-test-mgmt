@@ -375,8 +375,9 @@ export default async function SignupPage({
           <div className={styles.step}>
             <h3>Sign In to Join Beta Testing</h3>
             <p>
-              To test this app, sign in with your Google account. We'll automatically 
-              add you to our beta testing Google Group and assign you a promotional code.
+              To test this app, sign in with your Google account. We'll
+              automatically add you to our beta testing Google Group and assign
+              you a promotional code.
             </p>
 
             <GoogleSignInButton
@@ -385,8 +386,8 @@ export default async function SignupPage({
             />
 
             <p className={styles.instruction}>
-              After signing in, you'll be automatically added to the Google Group 
-              and receive your promotional code instantly.
+              After signing in, you'll be automatically added to the Google
+              Group and receive your promotional code instantly.
             </p>
           </div>
         )}

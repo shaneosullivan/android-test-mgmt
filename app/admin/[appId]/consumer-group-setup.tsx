@@ -13,14 +13,16 @@ interface ConsumerGroupSetupProps {
 function ConsumerGroupSetup(props: ConsumerGroupSetupProps) {
   const { googleGroupEmail, completeUrl, hasAssignedCodes } = props;
   const [isExpanded, setIsExpanded] = useState(!hasAssignedCodes);
-  
+
   const groupName = googleGroupEmail.split("@")[0];
 
   return (
     <section className={styles.section}>
       <div className={styles.sectionHeader}>
         <h2>
-          {hasAssignedCodes && <span className={styles.completedCheckmark}>✓</span>}
+          {hasAssignedCodes && (
+            <span className={styles.completedCheckmark}>✓</span>
+          )}
           🔧 Consumer Group Setup {hasAssignedCodes ? "Completed" : "Required"}
         </h2>
         <button
@@ -30,13 +32,13 @@ function ConsumerGroupSetup(props: ConsumerGroupSetupProps) {
           {isExpanded ? "Hide" : "Show"}
         </button>
       </div>
-      
+
       {isExpanded && (
         <div className={styles.setupContent}>
           <p>
             Since you're using a consumer Google Group (
-            <code>{googleGroupEmail}</code>), you need to add a welcome
-            message to allow automated signup.
+            <code>{googleGroupEmail}</code>), you need to add a welcome message
+            to allow automated signup.
           </p>
           <div className={styles.instructions}>
             <h3>Setup Instructions:</h3>
@@ -55,8 +57,8 @@ function ConsumerGroupSetup(props: ConsumerGroupSetupProps) {
               <li>
                 Add this text to your "Welcome message":
                 <div className={styles.welcomeMessage}>
-                  To install the app for free using a promotion code, click
-                  this link {completeUrl}
+                  To install the app for free using a promotion code, click this
+                  link {completeUrl}
                 </div>
                 <CopyButton
                   url={`To install the app for free using a promotion code, click this link ${completeUrl}`}
@@ -65,9 +67,9 @@ function ConsumerGroupSetup(props: ConsumerGroupSetupProps) {
               <li>Save the settings</li>
             </ol>
             <p>
-              <strong>How it works:</strong> When testers join your Google
-              Group manually, they'll receive this welcome message with a
-              direct link to get their promotional code.
+              <strong>How it works:</strong> When testers join your Google Group
+              manually, they'll receive this welcome message with a direct link
+              to get their promotional code.
             </p>
           </div>
         </div>

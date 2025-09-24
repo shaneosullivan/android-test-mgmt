@@ -16,21 +16,24 @@ function PromotionalCodesCard(props: PromotionalCodesCardProps) {
   const [promotionalCodes, setPromotionalCodes] = useState("");
   const [hasFile, setHasFile] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   const usedCodes = totalCodes - availableCodes;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Check if both sources are empty
     const textAreaEmpty = !promotionalCodes.trim();
     const fileEmpty = !hasFile;
 
     if (textAreaEmpty && fileEmpty) {
       setMessage({
-        type: 'error',
-        text: 'Please provide promotional codes either by entering them in the text area or uploading a CSV file.'
+        type: "error",
+        text: "Please provide promotional codes either by entering them in the text area or uploading a CSV file.",
       });
       return;
     }
@@ -41,8 +44,10 @@ function PromotionalCodesCard(props: PromotionalCodesCardProps) {
     try {
       const formData = new FormData();
       formData.append("promotionalCodes", promotionalCodes);
-      
-      const fileInput = document.getElementById("promotionalCodesFile") as HTMLInputElement;
+
+      const fileInput = document.getElementById(
+        "promotionalCodesFile"
+      ) as HTMLInputElement;
       if (fileInput?.files?.[0]) {
         formData.append("promotionalCodesFile", fileInput.files[0]);
       }
@@ -56,8 +61,8 @@ function PromotionalCodesCard(props: PromotionalCodesCardProps) {
 
       if (response.ok) {
         setMessage({
-          type: 'success',
-          text: data.message
+          type: "success",
+          text: data.message,
         });
         setPromotionalCodes("");
         setHasFile(false);
@@ -67,15 +72,15 @@ function PromotionalCodesCard(props: PromotionalCodesCardProps) {
         onCodesAdded();
       } else {
         setMessage({
-          type: 'error',
-          text: data.error || 'Failed to add promotional codes'
+          type: "error",
+          text: data.error || "Failed to add promotional codes",
         });
       }
     } catch (error) {
       console.error("Error adding codes:", error);
       setMessage({
-        type: 'error',
-        text: 'An unexpected error occurred'
+        type: "error",
+        text: "An unexpected error occurred",
       });
     } finally {
       setIsSubmitting(false);
@@ -90,7 +95,7 @@ function PromotionalCodesCard(props: PromotionalCodesCardProps) {
   return (
     <section className={styles.section}>
       <h2>Promotional Codes Management</h2>
-      
+
       <div className={styles.codesStats}>
         <div className={styles.codeStat}>
           <div className={styles.codeStatNumber}>{totalCodes}</div>
@@ -108,9 +113,15 @@ function PromotionalCodesCard(props: PromotionalCodesCardProps) {
 
       <div className={styles.addCodesSection}>
         <h3>Add More Promotional Codes</h3>
-        
+
         {message && (
-          <div className={message.type === 'success' ? styles.successMessage : styles.errorMessage}>
+          <div
+            className={
+              message.type === "success"
+                ? styles.successMessage
+                : styles.errorMessage
+            }
+          >
             {message.text}
           </div>
         )}

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { createApp, markAppSetupComplete, deleteApp } from "@/lib/firebase";
 import { canUserManageGoogleGroup } from "@/lib/google-groups";
 import { getSessionFromCookie } from "@/util/auth";
@@ -6,7 +6,9 @@ import { isValidPlayStoreUrl } from "@/util/android-utils";
 import { redirect } from "next/navigation";
 
 function parsePromotionalCodes(csvText: string): string[] {
-  if (!csvText.trim()) return [];
+  if (!csvText.trim()) {
+    return [];
+  }
 
   return csvText
     .split(/[\n,]/)
