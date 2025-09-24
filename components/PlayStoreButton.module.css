@@ -1,0 +1,42 @@
+.playStoreButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 32px;
+  background: #01875f;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 16px;
+  margin: 12px 0;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.playStoreButton:hover {
+  background: #016a4a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(1, 135, 95, 0.3);
+}
+
+.playStoreButton:active {
+  transform: translateY(0);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .playStoreButton {
+    padding: 14px 24px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .playStoreButton {
+    padding: 12px 20px;
+    font-size: 14px;
+    gap: 6px;
+  }
+}

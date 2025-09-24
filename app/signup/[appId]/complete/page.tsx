@@ -10,6 +10,7 @@ import { getSessionFromCookie } from "@/util/auth";
 import ErrorBox from "@/components/ErrorBox";
 import AppIcon from "@/components/AppIcon";
 import PromotionalCodeDisplay from "@/components/PromotionalCodeDisplay";
+import PlayStoreButton from "@/components/PlayStoreButton";
 import styles from "../page.module.css";
 
 interface CompletePageProps {
@@ -132,14 +133,7 @@ export default async function CompletePage({
             <h3>Download the App</h3>
             <p>You can now download the app from the Google Play Store:</p>
 
-            <a
-              href={app.playStoreUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.playStoreButton}
-            >
-              Download from Play Store
-            </a>
+            <PlayStoreButton url={app.playStoreUrl} />
           </div>
         </div>
       </div>

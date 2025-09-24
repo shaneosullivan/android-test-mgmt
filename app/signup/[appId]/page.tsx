@@ -8,6 +8,7 @@ import GoogleSignInButton from "@/components/GoogleSignInButton";
 import AuthButton from "./auth-button";
 import AppIcon from "@/components/AppIcon";
 import PromotionalCodeDisplay from "@/components/PromotionalCodeDisplay";
+import PlayStoreButton from "@/components/PlayStoreButton";
 import styles from "./page.module.css";
 
 interface SignupPageProps {
@@ -114,14 +115,7 @@ export default async function SignupPage({
               <h4>Download the App</h4>
               <p>You can now download the app from the Google Play Store:</p>
 
-              <a
-                href={app.playStoreUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.playStoreButton}
-              >
-                Download from Play Store
-              </a>
+              <PlayStoreButton url={app.playStoreUrl} />
             </div>
 
             <div className={styles.returnSection}>
@@ -181,14 +175,7 @@ export default async function SignupPage({
               <h4>Download the App</h4>
               <p>You can download the app from the Google Play Store:</p>
 
-              <a
-                href={app.playStoreUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.playStoreButton}
-              >
-                Download from Play Store
-              </a>
+              <PlayStoreButton url={app.playStoreUrl} />
             </div>
 
             {existingTester.promotionalCode && (
