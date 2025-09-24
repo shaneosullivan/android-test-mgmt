@@ -154,7 +154,8 @@ function RegisterForm(props: RegisterFormProps) {
       encType="multipart/form-data"
       onSubmit={handleSubmit}
       className={
-        session ? styles.form : `${styles.form} ${styles.formDisabled}`
+        (session ? styles.form : `${styles.form} ${styles.formDisabled}`) +
+        ` ${styles.bareForm}`
       }
     >
       {/* Hidden field to preserve the management preference */}

@@ -917,3 +917,7 @@
   /* background: #f8fafc !important; */
   border-color: #9ca3af !important;
 }
+
+form.bareForm label {
+  color: white;
+}
