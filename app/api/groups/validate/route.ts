@@ -1,10 +1,59 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSessionFromCookie } from "@/util/auth";
+import {
+  getSessionFromCookie,
+  refreshAccessToken,
+  setSessionCookie,
+} from "@/util/auth";
 import { google } from "googleapis";
 import { OAuth2Client } from "google-auth-library";
 
 const admin = google.admin("directory_v1");
 const groupsSettings = google.groupssettings("v1");
+
+/**
+ * Try to get a valid access token, refreshing if necessary
+ */
+async function tryWithTokenRefresh(
+  session: any,
+  apiCall: (accessToken: string) => Promise<any>
+): Promise<any> {
+  let accessToken = session.accessToken;
+
+  try {
+    // First try with the current access token
+    console.log("Trying API call with existing access token");
+    return await apiCall(accessToken);
+  } catch (error: any) {
+    // If we get a 401 and have a refresh token, try to refresh
+    if ((error.code === 401 || error.status === 401) && session.refreshToken) {
+      console.log("Access token invalid, attempting to refresh...");
+
+      try {
+        const newAccessToken = await refreshAccessToken(session.refreshToken);
+        if (newAccessToken) {
+          console.log("Successfully refreshed access token, retrying API call");
+
+          // Update the session with the new token
+          const updatedSession = {
+            ...session,
+            accessToken: newAccessToken,
+          };
+
+          // Update the cookie with the new token
+          await setSessionCookie(updatedSession);
+
+          // Retry the API call with the new token
+          return await apiCall(newAccessToken);
+        }
+      } catch (refreshError) {
+        console.error("Failed to refresh access token:", refreshError);
+      }
+    }
+
+    // Re-throw the original error if refresh failed or wasn't attempted
+    throw error;
+  }
+}
 
 interface GroupValidationResult {
   canManage: boolean;
@@ -109,100 +158,64 @@ async function validateGoogleGroup(
     };
   }
 
-  try {
-    const auth = new OAuth2Client();
-    auth.setCredentials({ access_token: accessToken });
+  const auth = new OAuth2Client();
+  auth.setCredentials({ access_token: accessToken });
 
-    // Try to get group information - this requires manage permissions
-    const response = await admin.groups.get({
-      auth,
-      groupKey: groupEmail,
-    });
+  // Try to get group information - this requires manage permissions
+  const response = await admin.groups.get({
+    auth,
+    groupKey: groupEmail,
+  });
 
-    if (response.status === 200) {
-      // Check external member policy
-      try {
-        const allowsExternalMembers = await checkExternalMemberPolicy(
-          groupEmail,
-          accessToken
-        );
+  if (response.status === 200) {
+    // Check external member policy
+    try {
+      const allowsExternalMembers = await checkExternalMemberPolicy(
+        groupEmail,
+        accessToken
+      );
 
+      return {
+        canManage: true,
+        allowsExternalMembers,
+      };
+    } catch (scopeError: any) {
+      if (scopeError.message === "INSUFFICIENT_SCOPES") {
         return {
           canManage: true,
-          allowsExternalMembers,
+          allowsExternalMembers: false,
+          error:
+            "Please re-authenticate to check group external member settings. Your current session doesn't have the required permissions.",
+          errorType: "AUTHENTICATION",
         };
-      } catch (scopeError: any) {
-        if (scopeError.message === "INSUFFICIENT_SCOPES") {
-          return {
-            canManage: true,
-            allowsExternalMembers: false,
-            error:
-              "Please re-authenticate to check group external member settings. Your current session doesn't have the required permissions.",
-            errorType: "AUTHENTICATION",
-          };
-        }
-        if (scopeError.message === "INSUFFICIENT_PERMISSIONS") {
-          return {
-            canManage: true,
-            allowsExternalMembers: false,
-            error:
-              "You need admin permissions to check this group's external member settings.",
-            errorType: "ACCESS_DENIED",
-          };
-        }
-        if (scopeError.message === "GROUP_NOT_FOUND") {
-          return {
-            canManage: true,
-            allowsExternalMembers: false,
-            error:
-              "Group not found in Groups Settings API. Please verify the group exists.",
-            errorType: "NOT_FOUND",
-          };
-        }
-        throw scopeError; // Re-throw other errors
       }
-    }
-
-    return {
-      canManage: false,
-      allowsExternalMembers: false,
-      error: "Unable to access group",
-    };
-  } catch (error: any) {
-    console.error(`Error validating group ${groupEmail}:`, error);
-
-    if (error.code === 401 || error.status === 401) {
-      return {
-        canManage: false,
-        allowsExternalMembers: false,
-        error:
-          "Authentication failed. Please re-authenticate with proper Workspace admin permissions.",
-        errorType: "AUTHENTICATION",
-      };
-    } else if (error.code === 404 || error.status === 404) {
-      return {
-        canManage: false,
-        allowsExternalMembers: false,
-        error:
-          "Group not found. Please verify the group email is correct and exists.",
-        errorType: "NOT_FOUND",
-      };
-    } else if (error.code === 403 || error.status === 403) {
-      return {
-        canManage: false,
-        allowsExternalMembers: false,
-        error: "Access denied. You need admin permissions for this group.",
-        errorType: "ACCESS_DENIED",
-      };
-    } else {
-      return {
-        canManage: false,
-        allowsExternalMembers: false,
-        error: `Network or server error: ${error.message}`,
-        errorType: "NETWORK_ERROR",
-      };
+      if (scopeError.message === "INSUFFICIENT_PERMISSIONS") {
+        return {
+          canManage: true,
+          allowsExternalMembers: false,
+          error:
+            "You need admin permissions to check this group's external member settings.",
+          errorType: "ACCESS_DENIED",
+        };
+      }
+      if (scopeError.message === "GROUP_NOT_FOUND") {
+        return {
+          canManage: true,
+          allowsExternalMembers: false,
+          error:
+            "Group not found in Groups Settings API. Please verify the group exists.",
+          errorType: "NOT_FOUND",
+        };
+      }
+      throw scopeError; // Re-throw other errors
     }
   }
+
+  return {
+    canManage: false,
+    allowsExternalMembers: false,
+    error: "Unable to access group",
+  };
 }
 
 export async function POST(request: NextRequest) {
@@ -229,14 +242,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await validateGoogleGroup(groupEmail, session.accessToken);
+    // Try the group validation with token refresh if needed
+    const result = await tryWithTokenRefresh(
+      session,
+      async (accessToken: string) => {
+        return await validateGoogleGroup(groupEmail, accessToken);
+      }
+    );
 
     return NextResponse.json(result);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Group validation API error:", error);
+
+    // Handle specific API errors that weren't caught by the validation function
+    if (error.code === 401 || error.status === 401) {
+      return NextResponse.json({
+        canManage: false,
+        allowsExternalMembers: false,
+        error:
+          "Authentication failed even after token refresh. Please re-authenticate.",
+        errorType: "AUTHENTICATION",
+      });
+    } else if (error.code === 404 || error.status === 404) {
+      return NextResponse.json({
+        canManage: false,
+        allowsExternalMembers: false,
+        error: "Group not found. Please verify the group email is correct.",
+        errorType: "NOT_FOUND",
+      });
+    } else if (error.code === 403 || error.status === 403) {
+      return NextResponse.json({
+        canManage: false,
+        allowsExternalMembers: false,
+        error: "Access denied. You need admin permissions for this group.",
+        errorType: "ACCESS_DENIED",
+      });
+    }
+
     return NextResponse.json(
       {
-        error: "Internal server error",
+        canManage: false,
+        allowsExternalMembers: false,
+        error: `Network or server error: ${error.message}`,
         errorType: "NETWORK_ERROR",
       },
       { status: 500 }

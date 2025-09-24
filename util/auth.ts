@@ -67,7 +67,9 @@ export async function getUserInfo(accessToken: string) {
 }
 
 export function createSessionToken(session: UserSession): string {
-  return jwt.sign(session, JWT_SECRET, { expiresIn: "30d" });
+  // Remove any existing exp property to avoid conflicts with JWT signing
+  const { exp, ...cleanSession } = session as any;
+  return jwt.sign(cleanSession, JWT_SECRET, { expiresIn: "30d" });
 }
 
 export function verifySessionToken(token: string): UserSession | null {
