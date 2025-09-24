@@ -3,9 +3,10 @@ import { adminDb } from "@/lib/firebase";
 import { getSessionFromCookie } from "@/util/auth";
 import { validateConfig } from "@/util/config";
 import { extractAppIdFromPlayStoreUrl } from "@/util/android-utils";
-import AuthButton from "./auth-button";
+import InitialForm from "./initial-form";
 import RegisterForm from "./register-form";
 import ErrorBox from "@/components/ErrorBox";
+import SignOutButton from "@/components/SignOutButton";
 import styles from "./page.module.css";
 
 interface RegisterPageProps {
@@ -17,6 +18,7 @@ interface RegisterPageProps {
     iconUrl?: string;
     error?: string;
     groupEmail?: string;
+    manageAutomatically?: string;
   }>;
 }
 
@@ -32,6 +34,11 @@ export default async function Register(props: RegisterPageProps) {
 
   // Get search parameters
   const searchParams = await props.searchParams;
+
+  // Determine if user has completed the initial group selection step
+  const hasGroupEmail =
+    searchParams.groupEmail || searchParams.googleGroupEmail;
+  const showFullForm = session && hasGroupEmail;
 
   return (
     <div className={styles.page}>
@@ -125,29 +132,36 @@ export default async function Register(props: RegisterPageProps) {
           </p>
         </div>
 
-        {!session && (
-          <div className={styles.authNotice}>
-            <p>
-              <strong>🔐 Authentication Required:</strong> Before registering
-              your app, you must sign in with the same Google account that
-              administers your Google Group. This allows us to verify your
-              permissions and manage group membership on your behalf.
-            </p>
-          </div>
+        {!showFullForm ? (
+          <InitialForm
+            defaultGroupEmail={
+              searchParams.groupEmail || searchParams.googleGroupEmail
+            }
+          />
+        ) : (
+          <RegisterForm
+            session={session}
+            defaultValues={{
+              appName: searchParams.appName || "",
+              googleGroupEmail:
+                searchParams.groupEmail || searchParams.googleGroupEmail || "",
+              playStoreUrl: searchParams.playStoreUrl || "",
+              promotionalCodes: searchParams.promotionalCodes || "",
+              iconUrl: searchParams.iconUrl || "",
+              manageAutomatically: searchParams.manageAutomatically === "true",
+            }}
+          />
         )}
 
-        <AuthButton session={session} />
-
-        <RegisterForm
-          session={session}
-          defaultValues={{
-            appName: searchParams.appName || "",
-            googleGroupEmail: searchParams.googleGroupEmail || "",
-            playStoreUrl: searchParams.playStoreUrl || "",
-            promotionalCodes: searchParams.promotionalCodes || "",
-            iconUrl: searchParams.iconUrl || "",
-          }}
-        />
+        {session && (
+          <div className={styles.signOutSection}>
+            <SignOutButton
+              redirectTo="/register"
+              variant="secondary"
+              className={styles.signOutButton}
+            />
+          </div>
+        )}
       </main>
     </div>
   );

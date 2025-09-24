@@ -9,6 +9,7 @@ import {
 import { getSessionFromCookie } from "@/util/auth";
 import ErrorBox from "@/components/ErrorBox";
 import AppIcon from "@/components/AppIcon";
+import PromotionalCodeDisplay from "@/components/PromotionalCodeDisplay";
 import styles from "../page.module.css";
 
 interface CompletePageProps {
@@ -113,14 +114,18 @@ export default async function CompletePage({
             ✅ You're now registered for beta testing!
           </div>
 
+          <div className={styles.groupInfo}>
+            <p>
+              You've been automatically added to the Google Group:{" "}
+              <strong>{app.googleGroupEmail}</strong>. This gives you access to the pre-release app.
+            </p>
+          </div>
+
           {existingTester?.promotionalCode && (
-            <div className={styles.codeSection}>
-              <h3>Your Promotional Code</h3>
-              <div className={styles.promotionalCode}>
-                {existingTester.promotionalCode}
-              </div>
-              <p>Use this code to get the app for free on the Play Store.</p>
-            </div>
+            <PromotionalCodeDisplay 
+              code={existingTester.promotionalCode}
+              description="Use this code to get the app for free on the Play Store."
+            />
           )}
 
           <div className={styles.downloadSection}>

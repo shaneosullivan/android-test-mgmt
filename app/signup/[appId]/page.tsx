@@ -7,6 +7,7 @@ import Button from "@/components/Button";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 import AuthButton from "./auth-button";
 import AppIcon from "@/components/AppIcon";
+import PromotionalCodeDisplay from "@/components/PromotionalCodeDisplay";
 import styles from "./page.module.css";
 
 interface SignupPageProps {
@@ -99,8 +100,15 @@ export default async function SignupPage({
             <h3>✅ You're All Set!</h3>
 
             <div className={styles.success}>
-              {`Welcome! ${code ? `Your promotional code: ${code}` : "You are now registered for testing."}`}
+              Welcome! You are now registered for testing.
             </div>
+
+            {code && (
+              <PromotionalCodeDisplay 
+                code={code}
+                description="Keep this code safe - you can return to this page anytime to retrieve it."
+              />
+            )}
 
             <div className={styles.downloadSection}>
               <h4>Download the App</h4>
@@ -115,17 +123,6 @@ export default async function SignupPage({
                 Download from Play Store
               </a>
             </div>
-
-            {code && (
-              <div className={styles.codeSection}>
-                <h4>Your Promotional Code</h4>
-                <div className={styles.promotionalCode}>{code}</div>
-                <p>
-                  Keep this code safe - you can return to this page anytime to
-                  retrieve it.
-                </p>
-              </div>
-            )}
 
             <div className={styles.returnSection}>
               <p>
@@ -195,12 +192,9 @@ export default async function SignupPage({
             </div>
 
             {existingTester.promotionalCode && (
-              <div className={styles.codeSection}>
-                <h4>Your Promotional Code</h4>
-                <div className={styles.promotionalCode}>
-                  {existingTester.promotionalCode}
-                </div>
-              </div>
+              <PromotionalCodeDisplay 
+                code={existingTester.promotionalCode}
+              />
             )}
 
             <div className={styles.returnSection}>
@@ -382,7 +376,7 @@ export default async function SignupPage({
 
             <GoogleSignInButton
               returnTo={`signup_${appId}`}
-              isConsumerGroup={false}
+              isConsumerGroup={true}
             />
 
             <p className={styles.instruction}>

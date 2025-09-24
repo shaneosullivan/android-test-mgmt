@@ -127,6 +127,7 @@ export async function canUserManageGoogleGroup(
   }
 }
 
+
 /**
  * Add a user to a Google Group
  * @param groupEmail - The email of the Google Group

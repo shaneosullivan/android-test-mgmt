@@ -1,0 +1,97 @@
+.codeSection {
+  margin: 24px 0;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.title {
+  margin: 0 0 16px 0;
+  color: #1a202c;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.codeContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.promotionalCode {
+  font-family: var(--font-geist-mono);
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a202c;
+  background: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  border: 2px solid #1e3a8a;
+  letter-spacing: 2px;
+  user-select: all; /* Make it easy to select */
+  cursor: text;
+}
+
+.copyButton {
+  background: #1e3a8a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  justify-content: center;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  width: 100px;
+}
+
+.copyButton:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.copyButton:active {
+  transform: translateY(0);
+}
+
+.description {
+  margin: 16px 0 0 0;
+  color: #4a5568;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .codeSection {
+    padding: 16px;
+  }
+
+  .promotionalCode {
+    font-size: 20px;
+    padding: 12px 16px;
+    letter-spacing: 1px;
+  }
+
+  .copyButton {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .promotionalCode {
+    font-size: 18px;
+    padding: 10px 12px;
+  }
+}

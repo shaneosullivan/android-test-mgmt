@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UserSession } from "@/util/auth";
 import Button from "@/components/Button";
 import styles from "./page.module.css";
@@ -13,6 +13,7 @@ interface RegisterFormProps {
     playStoreUrl: string;
     promotionalCodes: string;
     iconUrl: string;
+    manageAutomatically: boolean;
   };
 }
 
@@ -40,6 +41,10 @@ function RegisterForm(props: RegisterFormProps) {
     !isConsumerGroup &&
     groupEmail.includes("@") &&
     !groupEmail.endsWith("@googlegroups.com");
+
+  // Use the user's preference to determine if we should show workspace features
+  const shouldShowWorkspaceFeatures =
+    isWorkspaceGroup && defaultValues.manageAutomatically;
 
   const isValidGooglePlayIconUrl = (url: string): boolean => {
     if (!url.trim()) {
@@ -96,7 +101,7 @@ function RegisterForm(props: RegisterFormProps) {
   };
 
   const validateGoogleGroup = async (email: string) => {
-    if (!session || !isWorkspaceGroup || !email.trim()) {
+    if (!session || !shouldShowWorkspaceFeatures || !email.trim()) {
       setGroupValidation({ isValidating: false });
       return;
     }
@@ -135,6 +140,13 @@ function RegisterForm(props: RegisterFormProps) {
     validateGoogleGroup(groupEmail);
   };
 
+  // Validate group email on component mount if it's prepopulated
+  useEffect(() => {
+    if (groupEmail && groupEmail.trim()) {
+      validateGoogleGroup(groupEmail);
+    }
+  }, [session, shouldShowWorkspaceFeatures]); // Re-run if session or workspace features change
+
   return (
     <form
       action="/api/apps"
@@ -145,6 +157,13 @@ function RegisterForm(props: RegisterFormProps) {
         session ? styles.form : `${styles.form} ${styles.formDisabled}`
       }
     >
+      {/* Hidden field to preserve the management preference */}
+      <input
+        type="hidden"
+        name="manageAutomatically"
+        value={defaultValues.manageAutomatically.toString()}
+      />
+
       <div className={styles.field}>
         <label htmlFor="appName">App Name</label>
         <input
@@ -169,31 +188,24 @@ function RegisterForm(props: RegisterFormProps) {
           onChange={(e) => setGroupEmail(e.target.value)}
           onBlur={handleGroupEmailBlur}
         />
-        {isConsumerGroup && (
+        {(isConsumerGroup || !defaultValues.manageAutomatically) && (
           <div className={styles.consumerGroupWarning}>
-            <h4>⚠️ Consumer Google Group Detected</h4>
+            <h4>📝 Manual Group Management</h4>
             <p>
-              This appears to be a consumer Google Group (
-              <code>@googlegroups.com</code>). With consumer groups, testers
-              will need to <strong>manually join the group</strong> - they
-              cannot be added automatically.
+              {isConsumerGroup
+                ? "With consumer Google Groups (@googlegroups.com), testers will need to manually join the group - they cannot be added automatically."
+                : "You've chosen manual group management. Testers will need to manually join your Google Group."}
             </p>
             <p>
-              <strong>Recommendation:</strong> If you have a Google Workspace
-              domain, consider using a group like{" "}
-              <code>beta-testers@yourdomain.com</code> instead for full
-              automation.
-            </p>
-            <p>
-              <strong>If you continue with this consumer group:</strong> After
-              registration, you'll get instructions on how to set up a welcome
-              message that includes a direct signup link for testers.
+              <strong>How it works:</strong> After registration, you'll get
+              instructions on how to set up a welcome message that includes a
+              direct signup link for testers.
             </p>
           </div>
         )}
 
-        {/* Group validation feedback for Workspace groups */}
-        {isWorkspaceGroup && session && (
+        {/* Group validation feedback for automatically managed Workspace groups */}
+        {shouldShowWorkspaceFeatures && session && (
           <div className={styles.groupValidation}>
             {groupValidation.isValidating && (
               <div className={styles.validationSpinner}>

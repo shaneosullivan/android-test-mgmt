@@ -144,9 +144,8 @@
   margin: 0;
 }
 
-.signOutButton {
+.signOutSection .signOutButton {
   padding: 8px 16px;
-  background: transparent;
   color: rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 6px;
@@ -696,4 +695,225 @@
   margin: 0;
   color: #1e40af;
   font-size: 14px;
+}
+
+/* Initial Form Styles */
+.initialForm {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.step {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.step h2 {
+  color: #1e3a8a;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.step h3 {
+  color: #1e3a8a;
+  margin-bottom: 16px;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.step h4 {
+  color: #333;
+  margin: 0 0 12px 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.step p {
+  color: #555;
+  line-height: 1.6;
+  margin: 0 0 16px 0;
+}
+
+.step p:last-child {
+  margin-bottom: 0;
+}
+
+.groupEmailInput {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.consumerGroupInfo,
+.workspaceGroupOptions {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.consumerGroupInfo {
+  border-left: 4px solid #0066cc;
+}
+
+.consumerGroupInfo h4 {
+  color: #0066cc;
+  margin: 0 0 12px 0;
+}
+
+.consumerGroupInfo p {
+  color: #333;
+  margin: 0 0 12px 0;
+}
+
+.workspaceGroupOptions {
+  border-left: 4px solid #28a745;
+}
+
+.workspaceGroupOptions h4 {
+  color: #28a745;
+  margin: 0 0 12px 0;
+}
+
+.workspaceGroupOptions p {
+  color: #333;
+  margin: 0 0 16px 0;
+}
+
+.radioGroup {
+  margin-top: 16px;
+}
+
+.radioOption {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  gap: 12px;
+}
+
+.radioOption:hover {
+  border-color: #0066cc;
+  background-color: #f8f9fa;
+}
+
+.radioOption input[type="radio"] {
+  margin: 0;
+  margin-top: 2px; /* Align with first line of text */
+  flex-shrink: 0;
+}
+
+.radioContent {
+  flex: 1;
+}
+
+.radioTitle {
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.radioDescription {
+  color: #555;
+  margin-bottom: 8px;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.radioNote {
+  font-size: 13px;
+  color: #666;
+  font-style: italic;
+}
+
+.authStep {
+  margin-top: 24px;
+  padding: 20px;
+  background: #e8f4fd;
+  border-radius: 8px;
+  border: 1px solid #bee5eb;
+  text-align: left;
+}
+
+.authStep h3 {
+  color: #1e3a8a;
+  margin: 0 0 12px 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.authStep p {
+  color: #333;
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.field label {
+  display: block;
+  color: white;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.uploadLabel {
+  color: white;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.field label small {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: normal;
+}
+
+.permissionNotice {
+  margin-top: 16px;
+  padding: 12px;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.invalidEmailNotice {
+  margin-top: 16px;
+  padding: 12px;
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  color: #721c24;
+}
+
+.signOutSection {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+}
+
+.signOutButton {
+  /* background: white !important; */
+  color: #374151 !important;
+  border: 1px solid #d1d5db !important;
+}
+
+.signOutButton:hover:not(:disabled) {
+  /* background: #f8fafc !important; */
+  border-color: #9ca3af !important;
 }

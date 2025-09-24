@@ -58,6 +58,7 @@ export interface AppData {
   appIdSecret: string; // 32 character secret for direct signup links
   isSetupComplete: boolean; // Indicates if app registration completed successfully
   iconUrl?: string; // Optional app icon URL from Google Play Store
+  manageGroupAutomatically?: boolean; // Whether the service should manage the group automatically
   // Owner's OAuth tokens for managing the Google Group
   ownerAccessToken?: string; // Current access token
   ownerRefreshToken?: string; // Refresh token for long-term access
@@ -197,10 +198,11 @@ export async function createApp(
     .collection(FIRESTORE_COLLECTIONS.APPS)
     .doc(androidAppId);
 
-  // Prepare owner tokens with encryption (only for non-consumer groups)
+  // Prepare owner tokens with encryption (only when automatic management is enabled)
   const ownerTokenData: any = {};
   if (
     ownerTokens &&
+    processedAppData.manageGroupAutomatically &&
     !processedAppData.googleGroupEmail.endsWith("@googlegroups.com")
   ) {
     try {

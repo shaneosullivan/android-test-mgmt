@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
   const playStoreUrl = formData.get("playStoreUrl") as string;
   const iconUrl = formData.get("iconUrl") as string;
   const promotionalCodes = formData.get("promotionalCodes") as string;
+  const manageAutomatically = formData.get("manageAutomatically") === "true";
   const promotionalCodesFile = formData.get(
     "promotionalCodesFile"
   ) as File | null;
@@ -112,6 +113,7 @@ export async function POST(request: NextRequest) {
         googleGroupEmail,
         playStoreUrl,
         ownerId: session.email, // Use the actual signed-in user's email
+        manageGroupAutomatically: manageAutomatically,
       };
 
       // Only include iconUrl if it's provided and not empty
@@ -122,11 +124,13 @@ export async function POST(request: NextRequest) {
       appId = await createApp(
         appData,
         promotionalCodesArray.length > 0 ? promotionalCodesArray : undefined,
-        // Pass owner tokens for Workspace group management
-        {
-          accessToken: session.accessToken,
-          refreshToken: session.refreshToken,
-        }
+        // Pass owner tokens only if automatic management is enabled
+        manageAutomatically
+          ? {
+              accessToken: session.accessToken,
+              refreshToken: session.refreshToken,
+            }
+          : undefined
       );
 
       // Mark the app as successfully set up

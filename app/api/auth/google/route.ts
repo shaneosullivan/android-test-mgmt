@@ -26,11 +26,32 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // For app registration flow (/register), always request full Workspace scopes
-  // This allows users to register apps with either Workspace or consumer groups
-  if (authState === "/register" && !isConsumerGroup) {
-    // console.log("Registration flow detected - requesting full Workspace scopes");
-    isConsumerGroupFlow = false; // Always use full scopes for registration
+  // For app registration flow (/register), check if minimal scopes are needed
+  if (authState.startsWith("/register")) {
+    try {
+      const url = new URL(authState, "http://localhost");
+      const manageAutomatically = url.searchParams.get("manageAutomatically");
+      const groupEmail = url.searchParams.get("groupEmail");
+
+      // Use minimal scopes if:
+      // 1. Explicitly marked as consumer group, OR
+      // 2. User chose not to manage automatically, OR
+      // 3. It's actually a consumer group email
+      if (
+        isConsumerGroup ||
+        manageAutomatically === "false" ||
+        (groupEmail && groupEmail.endsWith("@googlegroups.com"))
+      ) {
+        isConsumerGroupFlow = true;
+      } else {
+        isConsumerGroupFlow = false; // Use full scopes for automatic management
+      }
+    } catch (error) {
+      console.log(
+        "Could not parse registration parameters, using full permissions"
+      );
+      isConsumerGroupFlow = false;
+    }
   }
 
   const authUrl = getAuthUrl(authState, isConsumerGroupFlow);
