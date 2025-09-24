@@ -3,6 +3,7 @@ import styles from "./page.module.css";
 import { validateConfig } from "@/util/config";
 import { redirect } from "next/navigation";
 import { adminDb } from "@/lib/firebase";
+import AboutContent from "./about/AboutContent";
 
 export default function Home() {
   const config = validateConfig();
@@ -117,6 +118,8 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <AboutContent />
 
         {/* CTA Section */}
         <section className={styles.finalCta}>

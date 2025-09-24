@@ -30,7 +30,7 @@
 
 .section {
   composes: sectionPadded from "../shared-theme.module.css";
-  margin-bottom: 32px;
+  margin-top: 32px;
 }
 
 .section h2 {
