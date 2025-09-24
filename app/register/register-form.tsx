@@ -73,11 +73,14 @@ function RegisterForm(props: RegisterFormProps) {
     const fileEmpty = !hasFile;
 
     if (textAreaEmpty && fileEmpty) {
-      e.preventDefault();
-      alert(
-        "Please provide promotional codes either by entering them in the text area or uploading a CSV file."
+      const shouldContinue = confirm(
+        "No promotional codes were provided. Your app will be registered without any promotional codes, and testers will join your beta testing without receiving codes. Do you want to continue?"
       );
-      return;
+      if (!shouldContinue) {
+        e.preventDefault();
+        return;
+      }
+      // User confirmed, continue with form submission
     }
 
     // Validate icon URL if provided
