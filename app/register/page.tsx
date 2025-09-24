@@ -25,7 +25,7 @@ interface RegisterPageProps {
 export default async function Register(props: RegisterPageProps) {
   // Check if all required configuration is present
   const config = validateConfig();
-  if (!config.isValid || !adminDb) {
+  if (!config.isValid || !adminDb()) {
     redirect("/config-missing");
   }
 

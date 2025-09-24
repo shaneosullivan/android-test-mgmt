@@ -6,7 +6,7 @@ import { adminDb } from "@/lib/firebase";
 
 export default function Home() {
   const config = validateConfig();
-  if (!config.isValid || !adminDb) {
+  if (!config.isValid || !adminDb()) {
     redirect("/config-missing");
   }
   return (

@@ -35,16 +35,13 @@ function initializeFirebaseAdmin() {
   });
 }
 
-let adminApp: ReturnType<typeof initializeFirebaseAdmin> | null = null;
-let adminDb: ReturnType<typeof getFirestore> | null = null;
+let adminDbInst: ReturnType<typeof getFirestore> | null = null;
 
-try {
-  adminApp = initializeFirebaseAdmin();
-  adminDb = getFirestore(adminApp);
-} catch (error) {
-  console.error("Firebase Admin initialization failed:", error);
-  adminApp = null;
-  adminDb = null;
+function adminDb() {
+  if (!adminDbInst) {
+    adminDbInst = getFirestore(initializeFirebaseAdmin());
+  }
+  return adminDbInst;
 }
 
 // Type definitions
@@ -95,18 +92,18 @@ function generateAppIdSecret(): string {
 
 // Database functions
 export async function deleteApp(appId: string): Promise<void> {
-  if (!adminDb) {
+  if (!adminDb()) {
     throw new Error("Firebase Admin not initialized");
   }
 
-  const batch = adminDb.batch();
+  const batch = adminDb().batch();
 
   // Delete the app document
-  const appRef = adminDb.collection(FIRESTORE_COLLECTIONS.APPS).doc(appId);
+  const appRef = adminDb().collection(FIRESTORE_COLLECTIONS.APPS).doc(appId);
   batch.delete(appRef);
 
   // Delete all promotional codes for this app (subcollection)
-  const codesSnapshot = await adminDb
+  const codesSnapshot = await adminDb()
     .collection(FIRESTORE_COLLECTIONS.APPS)
     .doc(appId)
     .collection(FIRESTORE_COLLECTIONS.PROMOTIONAL_CODES)
@@ -117,7 +114,7 @@ export async function deleteApp(appId: string): Promise<void> {
   });
 
   // Delete all testers for this app (subcollection)
-  const testersSnapshot = await adminDb
+  const testersSnapshot = await adminDb()
     .collection(FIRESTORE_COLLECTIONS.APPS)
     .doc(appId)
     .collection(FIRESTORE_COLLECTIONS.TESTERS)
@@ -131,9 +128,9 @@ export async function deleteApp(appId: string): Promise<void> {
 }
 
 export async function markAppSetupComplete(appId: string): Promise<void> {
-  if (!adminDb) throw new Error("Firebase Admin not initialized");
+  if (!adminDb()) throw new Error("Firebase Admin not initialized");
 
-  const docRef = adminDb.collection(FIRESTORE_COLLECTIONS.APPS).doc(appId);
+  const docRef = adminDb().collection(FIRESTORE_COLLECTIONS.APPS).doc(appId);
   await docRef.update({ isSetupComplete: true });
 }
 
@@ -145,7 +142,7 @@ export async function createApp(
   promotionalCodes?: string[],
   ownerTokens?: { accessToken: string; refreshToken?: string }
 ): Promise<string> {
-  if (!adminDb) {
+  if (!adminDb()) {
     throw new Error("Firebase Admin not initialized");
   }
 
@@ -194,7 +191,7 @@ export async function createApp(
   }
 
   // Use the Android app ID as the document ID
-  const docRef = adminDb
+  const docRef = adminDb()
     .collection(FIRESTORE_COLLECTIONS.APPS)
     .doc(androidAppId);
 
@@ -241,9 +238,9 @@ export async function createApp(
 }
 
 export async function getApp(appId: string): Promise<AppData | null> {
-  if (!adminDb) throw new Error("Firebase Admin not initialized");
+  if (!adminDb()) throw new Error("Firebase Admin not initialized");
 
-  const docRef = adminDb.collection(FIRESTORE_COLLECTIONS.APPS).doc(appId);
+  const docRef = adminDb().collection(FIRESTORE_COLLECTIONS.APPS).doc(appId);
   const doc = await docRef.get();
 
   if (!doc.exists) {
@@ -267,9 +264,9 @@ function convertFirebaseAppData(
 export async function addTester(
   testerData: Omit<TesterData, "id" | "joinedAt">
 ): Promise<string> {
-  if (!adminDb) throw new Error("Firebase Admin not initialized");
+  if (!adminDb()) throw new Error("Firebase Admin not initialized");
 
-  const docRef = adminDb
+  const docRef = adminDb()
     .collection(FIRESTORE_COLLECTIONS.APPS)
     .doc(testerData.appId)
     .collection(FIRESTORE_COLLECTIONS.TESTERS)
@@ -308,9 +305,9 @@ export async function getTesterByEmail(
   email: string,
   appId: string
 ): Promise<TesterData | null> {
-  if (!adminDb) throw new Error("Firebase Admin not initialized");
+  if (!adminDb()) throw new Error("Firebase Admin not initialized");
 
-  const snapshot = await adminDb
+  const snapshot = await adminDb()
     .collection(FIRESTORE_COLLECTIONS.APPS)
     .doc(appId)
     .collection(FIRESTORE_COLLECTIONS.TESTERS)
@@ -327,9 +324,9 @@ export async function getTesterByEmail(
 }
 
 export async function getTestersForApp(appId: string): Promise<TesterData[]> {
-  if (!adminDb) throw new Error("Firebase Admin not initialized");
+  if (!adminDb()) throw new Error("Firebase Admin not initialized");
 
-  const snapshot = await adminDb
+  const snapshot = await adminDb()
     .collection(FIRESTORE_COLLECTIONS.APPS)
     .doc(appId)
     .collection(FIRESTORE_COLLECTIONS.TESTERS)
@@ -345,9 +342,9 @@ export async function updateTester(
   appId: string,
   updates: Partial<Omit<TesterData, "id" | "appId">>
 ): Promise<void> {
-  if (!adminDb) throw new Error("Firebase Admin not initialized");
+  if (!adminDb()) throw new Error("Firebase Admin not initialized");
 
-  const docRef = adminDb
+  const docRef = adminDb()
     .collection(FIRESTORE_COLLECTIONS.APPS)
     .doc(appId)
     .collection(FIRESTORE_COLLECTIONS.TESTERS)
@@ -360,9 +357,9 @@ export async function addPromotionalCode(
   appId: string,
   code: string
 ): Promise<string> {
-  if (!adminDb) throw new Error("Firebase Admin not initialized");
+  if (!adminDb()) throw new Error("Firebase Admin not initialized");
 
-  const docRef = adminDb
+  const docRef = adminDb()
     .collection(FIRESTORE_COLLECTIONS.APPS)
     .doc(appId)
     .collection(FIRESTORE_COLLECTIONS.PROMOTIONAL_CODES)
@@ -379,13 +376,13 @@ export async function addPromotionalCodes(
   appId: string,
   codes: string[]
 ): Promise<string[]> {
-  if (!adminDb) throw new Error("Firebase Admin not initialized");
+  if (!adminDb()) throw new Error("Firebase Admin not initialized");
 
-  const batch = adminDb.batch();
+  const batch = adminDb().batch();
   const docIds: string[] = [];
 
   for (const code of codes) {
-    const docRef = adminDb
+    const docRef = adminDb()
       .collection(FIRESTORE_COLLECTIONS.APPS)
       .doc(appId)
       .collection(FIRESTORE_COLLECTIONS.PROMOTIONAL_CODES)
@@ -418,9 +415,9 @@ function convertFirebasePromotionalCodeData(
 export async function getPromotionalCodesForApp(
   appId: string
 ): Promise<PromotionalCode[]> {
-  if (!adminDb) throw new Error("Firebase Admin not initialized");
+  if (!adminDb()) throw new Error("Firebase Admin not initialized");
 
-  const snapshot = await adminDb
+  const snapshot = await adminDb()
     .collection(FIRESTORE_COLLECTIONS.APPS)
     .doc(appId)
     .collection(FIRESTORE_COLLECTIONS.PROMOTIONAL_CODES)
@@ -435,10 +432,10 @@ export async function getPromotionalCodesForApp(
 export async function getAvailablePromotionalCode(
   appId: string
 ): Promise<PromotionalCode | null> {
-  if (!adminDb) throw new Error("Firebase Admin not initialized");
+  if (!adminDb()) throw new Error("Firebase Admin not initialized");
 
   // Query for codes that don't have a redeemedAt field (unredeemed)
-  const snapshot = await adminDb
+  const snapshot = await adminDb()
     .collection(FIRESTORE_COLLECTIONS.APPS)
     .doc(appId)
     .collection(FIRESTORE_COLLECTIONS.PROMOTIONAL_CODES)
@@ -460,9 +457,9 @@ export async function redeemPromotionalCode(
   redeemedBy: string,
   appId: string
 ): Promise<void> {
-  if (!adminDb) throw new Error("Firebase Admin not initialized");
+  if (!adminDb()) throw new Error("Firebase Admin not initialized");
 
-  const docRef = adminDb
+  const docRef = adminDb()
     .collection(FIRESTORE_COLLECTIONS.APPS)
     .doc(appId)
     .collection(FIRESTORE_COLLECTIONS.PROMOTIONAL_CODES)
@@ -478,7 +475,7 @@ export async function redeemPromotionalCode(
 export async function createTester(
   testerData: Omit<TesterData, "id" | "joinedAt">
 ): Promise<string> {
-  if (!adminDb) throw new Error("Firebase Admin not initialized");
+  if (!adminDb()) throw new Error("Firebase Admin not initialized");
 
   // Assign promotional code if available
   const availableCode = await getAvailablePromotionalCode(testerData.appId);
@@ -494,7 +491,7 @@ export async function createTester(
     promotionalCode = availableCode.code;
   }
 
-  const docRef = adminDb
+  const docRef = adminDb()
     .collection(FIRESTORE_COLLECTIONS.APPS)
     .doc(testerData.appId)
     .collection(FIRESTORE_COLLECTIONS.TESTERS)
@@ -524,7 +521,7 @@ export async function createTester(
 export async function getAppOwnerAccessToken(
   appId: string
 ): Promise<string | null> {
-  if (!adminDb) {
+  if (!adminDb()) {
     throw new Error("Firebase Admin not initialized");
   }
 
@@ -555,7 +552,7 @@ export async function getAppOwnerAccessToken(
       if (newAccessToken) {
         // Encrypt and update the stored access token
         const encryptedNewAccessToken = encryptToken(newAccessToken);
-        const docRef = adminDb
+        const docRef = adminDb()
           .collection(FIRESTORE_COLLECTIONS.APPS)
           .doc(appId);
         await docRef.update({ ownerAccessToken: encryptedNewAccessToken });
@@ -579,4 +576,4 @@ export async function getAppOwnerAccessToken(
 }
 
 // Export the admin instances for direct use if needed
-export { adminApp, adminDb };
+export { adminDb };
