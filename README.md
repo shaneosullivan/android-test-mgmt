@@ -9,8 +9,7 @@ download the app, along with the next available promotional code if the app is a
 email address to Firebase Firestore along with their assigned promotional code, so that they can return to the app
 and retrieve their code again if needed.
 
-The canonical instance of this app is hosted at [https://androidtest.chofter.com/](https://androidtest.chofter.com/),
-and
+The canonical instance of this app is hosted at [https://androidtest.chofter.com/](https://androidtest.chofter.com/).
 
 ## Features
 
