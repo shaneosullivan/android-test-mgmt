@@ -90,13 +90,13 @@ export default function Home() {
             <div className={styles.benefit}>
               <span className={styles.checkmark}>✓</span>
               <span>
-                Automated Google Group management for Workspace Groups. Also
-                works with public groups
+                Automatically add testers to Workspace Groups (on your own
+                domain), and give clear guidance for public Google groups
               </span>
             </div>
             <div className={styles.benefit}>
               <span className={styles.checkmark}>✓</span>
-              <span>Promotional code distribution for paid apps</span>
+              <span>Automated promotional code distribution for paid apps</span>
             </div>
             <div className={styles.benefit}>
               <span className={styles.checkmark}>✓</span>
