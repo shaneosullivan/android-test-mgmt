@@ -233,8 +233,21 @@
   background: rgba(255, 255, 255, 0.1);
   border-radius: 6px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 12px;
+}
+
+.uploadOption textarea {
+  display: inline-block;
+  width: 100%;
+}
+
+.uploadFileOption {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
 }
 
 .uploadLabel {
@@ -433,4 +446,254 @@
 .instructionsBox em {
   color: #6b7280;
   font-style: italic;
+}
+
+/* Group validation styles */
+.groupValidation {
+  margin-top: 12px;
+}
+
+.validationSpinner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #e0f2fe;
+  border: 1px solid #0284c7;
+  border-radius: 8px;
+  color: #0c4a6e;
+  font-size: 14px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e0f2fe;
+  border-top: 2px solid #0284c7;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.validationError {
+  padding: 16px;
+  background: #fef2f2;
+  border: 1px solid #ef4444;
+  border-radius: 8px;
+  color: #991b1b;
+}
+
+.validationError h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.validationError p {
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #991b1b;
+}
+
+.revalidateButton {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: all 0.2s;
+}
+
+.revalidateButton:hover {
+  background: #b91c1c;
+}
+
+.validationSuccess {
+  padding: 16px;
+  background: #f0fdf4;
+  border: 1px solid #22c55e;
+  border-radius: 8px;
+  color: #166534;
+}
+
+.validationSuccess h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.validationSuccess p {
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #166534;
+  text-align: left;
+}
+
+.externalMemberWarning {
+  margin-top: 12px;
+  padding: 12px;
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 6px;
+  text-align: left;
+}
+
+.externalMemberWarning p {
+  color: #92400e !important;
+  margin: 4px 0;
+  font-size: 13px;
+  text-align: left;
+}
+
+.helpButton {
+  background: #f59e0b;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.2s;
+}
+
+.helpButton:hover {
+  background: #d97706;
+}
+
+/* Modal styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #6b7280;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.closeButton:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.modalContent {
+  padding: 24px;
+}
+
+.modalContent p {
+  margin: 0 0 16px 0;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.modalContent ol {
+  margin: 16px 0;
+  padding-left: 24px;
+}
+
+.modalContent li {
+  margin-bottom: 8px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.modalContent ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.modalContent ul li {
+  margin-bottom: 4px;
+}
+
+.modalContent code {
+  background: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: var(--font-geist-mono);
+  font-size: 13px;
+  color: #1f2937;
+}
+
+.modalContent a {
+  color: #1e40af;
+  text-decoration: none;
+}
+
+.modalContent a:hover {
+  text-decoration: underline;
+}
+
+.modalNote {
+  margin-top: 20px;
+  padding: 12px;
+  background: #eff6ff;
+  border: 1px solid #3b82f6;
+  border-radius: 6px;
+}
+
+.modalNote p {
+  margin: 0;
+  color: #1e40af;
+  font-size: 14px;
 }

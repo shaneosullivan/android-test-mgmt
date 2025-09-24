@@ -14,6 +14,7 @@ interface RegisterPageProps {
     googleGroupEmail?: string;
     playStoreUrl?: string;
     promotionalCodes?: string;
+    iconUrl?: string;
     error?: string;
     groupEmail?: string;
   }>;
@@ -144,6 +145,7 @@ export default async function Register(props: RegisterPageProps) {
             googleGroupEmail: searchParams.googleGroupEmail || "",
             playStoreUrl: searchParams.playStoreUrl || "",
             promotionalCodes: searchParams.promotionalCodes || "",
+            iconUrl: searchParams.iconUrl || "",
           }}
         />
       </main>

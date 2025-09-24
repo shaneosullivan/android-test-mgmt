@@ -4,6 +4,7 @@ import { validateConfig } from "@/util/config";
 import { FIRESTORE_COLLECTIONS } from "@/lib/consts";
 import { extractAppIdFromPlayStoreUrl } from "@/util/android-utils";
 import { downloadImageAsBase64 } from "@/util/image-utils";
+import { encryptToken, decryptToken } from "@/util/encryption";
 
 // Firebase Admin initialization
 function initializeFirebaseAdmin() {
@@ -57,6 +58,9 @@ export interface AppData {
   appIdSecret: string; // 32 character secret for direct signup links
   isSetupComplete: boolean; // Indicates if app registration completed successfully
   iconUrl?: string; // Optional app icon URL from Google Play Store
+  // Owner's OAuth tokens for managing the Google Group
+  ownerAccessToken?: string; // Current access token
+  ownerRefreshToken?: string; // Refresh token for long-term access
 }
 
 export interface PromotionalCode {
@@ -137,7 +141,8 @@ export async function createApp(
     AppData,
     "id" | "createdAt" | "appIdSecret" | "isSetupComplete"
   >,
-  promotionalCodes?: string[]
+  promotionalCodes?: string[],
+  ownerTokens?: { accessToken: string; refreshToken?: string }
 ): Promise<string> {
   if (!adminDb) {
     throw new Error("Firebase Admin not initialized");
@@ -192,11 +197,37 @@ export async function createApp(
     .collection(FIRESTORE_COLLECTIONS.APPS)
     .doc(androidAppId);
 
+  // Prepare owner tokens with encryption (only for non-consumer groups)
+  const ownerTokenData: any = {};
+  if (
+    ownerTokens &&
+    !processedAppData.googleGroupEmail.endsWith("@googlegroups.com")
+  ) {
+    try {
+      // console.log(`Encrypting owner tokens for app ${androidAppId}`);
+      ownerTokenData.ownerAccessToken = encryptToken(ownerTokens.accessToken);
+      if (ownerTokens.refreshToken) {
+        ownerTokenData.ownerRefreshToken = encryptToken(
+          ownerTokens.refreshToken
+        );
+      }
+      // console.log(`Successfully encrypted owner tokens for app ${androidAppId}`);
+    } catch (error) {
+      console.error(
+        `Failed to encrypt owner tokens for app ${androidAppId}:`,
+        error
+      );
+      throw new Error("Failed to encrypt authentication tokens");
+    }
+  }
+
   await docRef.set({
     ...processedAppData,
     createdAt: new Date(),
     appIdSecret: generateAppIdSecret(),
     isSetupComplete: false, // Will be set to true at the end of successful registration
+    // Store encrypted owner tokens for Workspace group management
+    ...ownerTokenData,
   });
 
   // Add promotional codes to separate collection if provided
@@ -475,6 +506,68 @@ export async function createTester(
   await docRef.set(dataToSet);
 
   return docRef.id;
+}
+
+/**
+ * Get a valid access token for an app owner, refreshing if necessary
+ * @param appId - The app ID to get the owner's access token for
+ * @returns Promise<string | null> - Valid access token or null if unavailable
+ */
+export async function getAppOwnerAccessToken(
+  appId: string
+): Promise<string | null> {
+  if (!adminDb) {
+    throw new Error("Firebase Admin not initialized");
+  }
+
+  const app = await getApp(appId);
+  if (!app || !app.ownerAccessToken) {
+    console.log(`No owner access token found for app ${appId}`);
+    return null;
+  }
+
+  // For consumer groups, we don't store tokens
+  if (app.googleGroupEmail.endsWith("@googlegroups.com")) {
+    // console.log(`App ${appId} uses consumer group - no owner token needed`);
+    return null;
+  }
+
+  try {
+    // Decrypt the stored access token
+    // console.log(`Decrypting owner access token for app ${appId}`);
+    const decryptedAccessToken = decryptToken(app.ownerAccessToken);
+
+    // Try to refresh the token if we have a refresh token
+    if (app.ownerRefreshToken) {
+      console.log(`Attempting to refresh access token for app ${appId}`);
+      const { refreshAccessToken } = await import("@/util/auth");
+      const decryptedRefreshToken = decryptToken(app.ownerRefreshToken);
+      const newAccessToken = await refreshAccessToken(decryptedRefreshToken);
+
+      if (newAccessToken) {
+        // Encrypt and update the stored access token
+        const encryptedNewAccessToken = encryptToken(newAccessToken);
+        const docRef = adminDb
+          .collection(FIRESTORE_COLLECTIONS.APPS)
+          .doc(appId);
+        await docRef.update({ ownerAccessToken: encryptedNewAccessToken });
+        console.log(
+          `Successfully refreshed and encrypted access token for app ${appId}`
+        );
+        return newAccessToken;
+      }
+    }
+
+    // Fall back to the decrypted stored access token (might be expired)
+    // console.log(`Using decrypted stored access token for app ${appId}`);
+    return decryptedAccessToken;
+  } catch (error) {
+    console.error(`Failed to decrypt owner tokens for app ${appId}:`, error);
+    console.error(
+      `This may indicate the TOKEN_ENCRYPTION_KEY has changed or tokens are corrupted`
+    );
+    return null;
+  }
 }
 
 // Export the admin instances for direct use if needed

@@ -26,6 +26,13 @@ export async function GET(request: NextRequest) {
     }
   }
 
+  // For app registration flow (/register), always request full Workspace scopes
+  // This allows users to register apps with either Workspace or consumer groups
+  if (authState === "/register" && !isConsumerGroup) {
+    // console.log("Registration flow detected - requesting full Workspace scopes");
+    isConsumerGroupFlow = false; // Always use full scopes for registration
+  }
+
   const authUrl = getAuthUrl(authState, isConsumerGroupFlow);
 
   return NextResponse.redirect(authUrl);

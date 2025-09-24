@@ -301,6 +301,29 @@ body {
   font-size: 14px;
 }
 
+/* Auth section styles */
+.authSection {
+  text-align: center;
+  margin-top: 24px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.userInfo {
+  margin-bottom: 16px;
+}
+
+.signedInText {
+  font-size: 14px;
+  color: #374151;
+}
+
+.signedInText strong {
+  color: #1f2937;
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 20px 16px;
@@ -332,5 +355,10 @@ body {
 
   .returnSection form {
     max-width: none;
+  }
+
+  .authSection {
+    margin-top: 20px;
+    padding: 20px 16px;
   }
 }

@@ -12,6 +12,7 @@ interface RegisterFormProps {
     googleGroupEmail: string;
     playStoreUrl: string;
     promotionalCodes: string;
+    iconUrl: string;
   };
 }
 
@@ -22,10 +23,23 @@ function RegisterForm(props: RegisterFormProps) {
     defaultValues.promotionalCodes
   );
   const [hasFile, setHasFile] = useState(false);
-  const [iconUrl, setIconUrl] = useState("");
+  const [iconUrl, setIconUrl] = useState(defaultValues.iconUrl);
   const [showIconInstructions, setShowIconInstructions] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [groupValidation, setGroupValidation] = useState<{
+    isValidating: boolean;
+    canManage?: boolean;
+    allowsExternalMembers?: boolean;
+    error?: string;
+    errorType?: string;
+  }>({ isValidating: false });
+  const [showExternalUserModal, setShowExternalUserModal] = useState(false);
 
   const isConsumerGroup = groupEmail.endsWith("@googlegroups.com");
+  const isWorkspaceGroup =
+    !isConsumerGroup &&
+    groupEmail.includes("@") &&
+    !groupEmail.endsWith("@googlegroups.com");
 
   const isValidGooglePlayIconUrl = (url: string): boolean => {
     if (!url.trim()) return true; // Empty URL is valid (optional field)
@@ -41,6 +55,12 @@ function RegisterForm(props: RegisterFormProps) {
   };
 
   const handleSubmit = (e: React.FormEvent) => {
+    // Prevent double submission
+    if (isSubmitting) {
+      e.preventDefault();
+      return;
+    }
+
     // Check if both promotional code sources are empty
     const textAreaEmpty = !promotionalCodes.trim();
     const fileEmpty = !hasFile;
@@ -61,10 +81,56 @@ function RegisterForm(props: RegisterFormProps) {
       );
       return;
     }
+
+    // Set submitting state to prevent double submission
+    setIsSubmitting(true);
+
+    // Form will continue to submit naturally
+    // Note: If validation fails above, isSubmitting remains false
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setHasFile(!!e.target.files?.length);
+  };
+
+  const validateGoogleGroup = async (email: string) => {
+    if (!session || !isWorkspaceGroup || !email.trim()) {
+      setGroupValidation({ isValidating: false });
+      return;
+    }
+
+    setGroupValidation({ isValidating: true });
+
+    try {
+      const response = await fetch("/api/groups/validate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ groupEmail: email }),
+      });
+
+      const result = await response.json();
+
+      setGroupValidation({
+        isValidating: false,
+        canManage: result.canManage,
+        allowsExternalMembers: result.allowsExternalMembers,
+        error: result.error,
+        errorType: result.errorType,
+      });
+    } catch (error) {
+      console.error("Group validation error:", error);
+      setGroupValidation({
+        isValidating: false,
+        error: "Network error occurred while validating group permissions.",
+        errorType: "NETWORK_ERROR",
+      });
+    }
+  };
+
+  const handleGroupEmailBlur = () => {
+    validateGoogleGroup(groupEmail);
   };
 
   return (
@@ -99,6 +165,7 @@ function RegisterForm(props: RegisterFormProps) {
           placeholder="beta-testers@googlegroups.com"
           value={groupEmail}
           onChange={(e) => setGroupEmail(e.target.value)}
+          onBlur={handleGroupEmailBlur}
         />
         {isConsumerGroup && (
           <div className={styles.consumerGroupWarning}>
@@ -120,6 +187,74 @@ function RegisterForm(props: RegisterFormProps) {
               registration, you'll get instructions on how to set up a welcome
               message that includes a direct signup link for testers.
             </p>
+          </div>
+        )}
+
+        {/* Group validation feedback for Workspace groups */}
+        {isWorkspaceGroup && session && (
+          <div className={styles.groupValidation}>
+            {groupValidation.isValidating && (
+              <div className={styles.validationSpinner}>
+                <div className={styles.spinner}></div>
+                <span>Checking group permissions...</span>
+              </div>
+            )}
+
+            {!groupValidation.isValidating && groupValidation.error && (
+              <div className={styles.validationError}>
+                <h4>❌ Permission Issue</h4>
+                <p>{groupValidation.error}</p>
+                {groupValidation.errorType === "ACCESS_DENIED" && (
+                  <p>
+                    <strong>Solution:</strong> You need to get admin privileges
+                    for this Google Group before you can register your app.
+                  </p>
+                )}
+                <button
+                  type="button"
+                  onClick={() => validateGoogleGroup(groupEmail)}
+                  className={styles.revalidateButton}
+                >
+                  Revalidate
+                </button>
+              </div>
+            )}
+
+            {!groupValidation.isValidating &&
+              groupValidation.canManage &&
+              !groupValidation.error && (
+                <div className={styles.validationSuccess}>
+                  <h4>✅ Permission Verified</h4>
+                  <p>You can manage this Google Group.</p>
+                  {groupValidation.allowsExternalMembers && (
+                    <p>
+                      <strong>✅ External users are allowed</strong> - Anyone with the link can join your beta testing.
+                    </p>
+                  )}
+                  {!groupValidation.allowsExternalMembers && (
+                    <div className={styles.externalMemberWarning}>
+                      <p>
+                        <strong>⚠️ External Members Not Allowed:</strong> This
+                        group is currently configured to not allow external
+                        members, only members from your Google Workspace domain
+                        can join.
+                      </p>
+                      <p>
+                        For your beta testing to work with external users,
+                        you'll need to enable external members for this group
+                        using the instructions below:
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setShowExternalUserModal(true)}
+                        className={styles.helpButton}
+                      >
+                        Show me how to enable external users
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
           </div>
         )}
       </div>
@@ -187,28 +322,128 @@ function RegisterForm(props: RegisterFormProps) {
           Promotional Codes (optional){" "}
           <small>Enter codes manually or upload a CSV file</small>
         </label>
-        <textarea
-          id="promotionalCodes"
-          name="promotionalCodes"
-          placeholder="CODE1, CODE2, CODE3"
-          rows={4}
-          value={promotionalCodes}
-          onChange={(e) => setPromotionalCodes(e.target.value)}
-        />
         <div className={styles.uploadOption}>
-          <span className={styles.uploadLabel}>Or upload CSV file:</span>
-          <input
-            type="file"
-            id="promotionalCodesFile"
-            name="promotionalCodesFile"
-            accept=".csv"
-            onChange={handleFileChange}
-            className={styles.fileInput}
+          <textarea
+            id="promotionalCodes"
+            name="promotionalCodes"
+            placeholder="CODE1, CODE2, CODE3"
+            rows={4}
+            value={promotionalCodes}
+            onChange={(e) => setPromotionalCodes(e.target.value)}
           />
+          <div className={styles.uploadFileOption}>
+            <span className={styles.uploadLabel}>Or upload CSV file:</span>
+            <input
+              type="file"
+              id="promotionalCodesFile"
+              name="promotionalCodesFile"
+              accept=".csv"
+              onChange={handleFileChange}
+              className={styles.fileInput}
+            />
+          </div>
         </div>
       </div>
 
-      <Button type="submit">Register App</Button>
+      <Button type="submit" disabled={!session || isSubmitting}>
+        {isSubmitting ? "Submitting..." : "Register App"}
+      </Button>
+
+      {/* Modal for external user instructions */}
+      {showExternalUserModal && (
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setShowExternalUserModal(false)}
+        >
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h3>
+                Check and Enable External Users for Google Workspace Groups
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowExternalUserModal(false)}
+                className={styles.closeButton}
+              >
+                ×
+              </button>
+            </div>
+            <div className={styles.modalContent}>
+              <p>
+                To check and enable external users for your Google Workspace
+                group:
+              </p>
+              <ol>
+                <li>
+                  Go to{" "}
+                  <a
+                    href="https://admin.google.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Google Admin Console
+                  </a>
+                </li>
+                <li>
+                  Navigate to <strong>Groups</strong> in the left sidebar
+                </li>
+                <li>
+                  Find and click on your group: <code>{groupEmail}</code>
+                </li>
+                <li>
+                  Click on <strong>Access settings</strong>
+                </li>
+                <li>
+                  Under <strong>"Who can join the group"</strong>, select:
+                  <ul>
+                    <li>
+                      <strong>"Anyone on the web"</strong> - for completely open
+                      groups
+                    </li>
+                    <li>
+                      <strong>"Anyone can ask"</strong> - for moderated external
+                      access
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  Under <strong>"Allow external members"</strong>, ensure that
+                  you have selected <strong>"ON"</strong>. If this is not
+                  allowed, you need to enable it in the main Admin settings
+                  first, or contact the admin of your Google Workspace domain to
+                  enable the setting. Tell then:
+                  <ul>
+                    <li>
+                      Go to{" "}
+                      <strong>
+                        Apps &gt; Google Workspace &gt; Groups for Business
+                      </strong>
+                    </li>
+                    <li>
+                      Click on <strong>Sharing settings</strong>
+                    </li>
+                    <li>
+                      Ensure{" "}
+                      <strong>"Group owners can allow external members"</strong>{" "}
+                      is checked
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  Click <strong>Save</strong>
+                </li>
+              </ol>
+              <div className={styles.modalNote}>
+                <p>
+                  <strong>Note:</strong> These settings require Google Workspace
+                  admin privileges. If you don't have admin access, contact your
+                  IT administrator.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </form>
   );
 }

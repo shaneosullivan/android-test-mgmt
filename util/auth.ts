@@ -36,6 +36,7 @@ export function getAuthUrl(
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/admin.directory.group",
         "https://www.googleapis.com/auth/groups",
+        "https://www.googleapis.com/auth/apps.groups.settings",
       ];
 
   return client.generateAuthUrl({
@@ -111,4 +112,15 @@ export async function requireAuth(): Promise<UserSession> {
     throw new Error("Authentication required");
   }
   return session;
+}
+
+export async function refreshAccessToken(refreshToken: string): Promise<string | null> {
+  try {
+    client.setCredentials({ refresh_token: refreshToken });
+    const { credentials } = await client.refreshAccessToken();
+    return credentials.access_token || null;
+  } catch (error) {
+    console.error("Failed to refresh access token:", error);
+    return null;
+  }
 }

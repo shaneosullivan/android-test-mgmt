@@ -4,15 +4,22 @@ import { useState } from "react";
 import { AppData, TesterData, PromotionalCode } from "@/lib/firebase";
 
 // Serialized versions of the Firebase types for client components
-type SerializedAppData = Omit<AppData, 'createdAt'> & {
+type SerializedAppData = Omit<
+  AppData,
+  "createdAt" | "ownerAccessToken" | "ownerRefreshToken"
+> & {
   createdAt: string; // ISO string instead of Date
+  // Note: Owner tokens are not sent to client for security
 };
 
-type SerializedTesterData = Omit<TesterData, 'joinedAt'> & {
+type SerializedTesterData = Omit<TesterData, "joinedAt"> & {
   joinedAt: string; // ISO string instead of Date
 };
 
-type SerializedPromotionalCode = Omit<PromotionalCode, 'createdAt' | 'redeemedAt'> & {
+type SerializedPromotionalCode = Omit<
+  PromotionalCode,
+  "createdAt" | "redeemedAt"
+> & {
   createdAt: string; // ISO string instead of Date
   redeemedAt?: string; // ISO string instead of Date
 };
@@ -32,8 +39,15 @@ interface AdminContentProps {
 }
 
 function AdminContent(props: AdminContentProps) {
-  const { appId, initialApp: app, initialTesters, initialPromotionalCodes } = props;
-  const [promotionalCodes, setPromotionalCodes] = useState(initialPromotionalCodes);
+  const {
+    appId,
+    initialApp: app,
+    initialTesters,
+    initialPromotionalCodes,
+  } = props;
+  const [promotionalCodes, setPromotionalCodes] = useState(
+    initialPromotionalCodes
+  );
   const [testers] = useState(initialTesters);
 
   const signupUrl = `${APP_URL_BASE}/signup/${appId}`;
@@ -58,8 +72,14 @@ function AdminContent(props: AdminContentProps) {
         // Convert Firestore timestamps to ISO strings for serialization
         const serializedCodes = data.promotionalCodes.map((code: any) => ({
           ...code,
-          createdAt: code.createdAt.toDate ? code.createdAt.toDate().toISOString() : code.createdAt,
-          redeemedAt: code.redeemedAt ? (code.redeemedAt.toDate ? code.redeemedAt.toDate().toISOString() : code.redeemedAt) : undefined,
+          createdAt: code.createdAt.toDate
+            ? code.createdAt.toDate().toISOString()
+            : code.createdAt,
+          redeemedAt: code.redeemedAt
+            ? code.redeemedAt.toDate
+              ? code.redeemedAt.toDate().toISOString()
+              : code.redeemedAt
+            : undefined,
         }));
         setPromotionalCodes(serializedCodes);
       }
@@ -97,8 +117,7 @@ function AdminContent(props: AdminContentProps) {
             </a>
           </div>
           <div className={styles.detail}>
-            <strong>Total Promotional Codes:</strong>{" "}
-            {promotionalCodes.length}
+            <strong>Total Promotional Codes:</strong> {promotionalCodes.length}
           </div>
         </div>
       </section>

@@ -60,8 +60,10 @@ export default async function AdminPage({ params }: AdminPageProps) {
     }
 
     // Serialize the data to ensure it can be passed to client components
+    // Exclude owner tokens for security (they should never be sent to client)
+    const { ownerAccessToken, ownerRefreshToken, ...appWithoutTokens } = app;
     const serializedApp = {
-      ...app,
+      ...appWithoutTokens,
       createdAt: app.createdAt.toISOString(),
     };
 

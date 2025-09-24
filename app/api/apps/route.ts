@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
         ...(googleGroupEmail && { googleGroupEmail }),
         ...(playStoreUrl && { playStoreUrl }),
         ...(promotionalCodes && { promotionalCodes }),
+        ...(iconUrl && { iconUrl }),
         error: "missing_required_fields",
       });
       return redirect(`/register?${params.toString()}`);
@@ -50,6 +51,7 @@ export async function POST(request: NextRequest) {
         googleGroupEmail,
         playStoreUrl,
         ...(promotionalCodes && { promotionalCodes }),
+        ...(iconUrl && { iconUrl }),
         error: "invalid_play_store_url",
       });
       return redirect(`/register?${params.toString()}`);
@@ -64,6 +66,7 @@ export async function POST(request: NextRequest) {
         googleGroupEmail,
         playStoreUrl,
         ...(promotionalCodes && { promotionalCodes }),
+        ...(iconUrl && { iconUrl }),
         error: "authentication_required",
       });
       return redirect(`/register?${params.toString()}`);
@@ -83,6 +86,7 @@ export async function POST(request: NextRequest) {
         googleGroupEmail,
         playStoreUrl,
         ...(promotionalCodes && { promotionalCodes }),
+        ...(iconUrl && { iconUrl }),
         error: "group_access_denied",
         groupEmail: googleGroupEmail, // Pass the group email for better error messaging
       });
@@ -115,7 +119,12 @@ export async function POST(request: NextRequest) {
 
       appId = await createApp(
         appData,
-        promotionalCodesArray.length > 0 ? promotionalCodesArray : undefined
+        promotionalCodesArray.length > 0 ? promotionalCodesArray : undefined,
+        // Pass owner tokens for Workspace group management
+        {
+          accessToken: session.accessToken,
+          refreshToken: session.refreshToken,
+        }
       );
 
       // Mark the app as successfully set up
@@ -163,6 +172,7 @@ export async function POST(request: NextRequest) {
           ...(googleGroupEmail && { googleGroupEmail }),
           ...(playStoreUrl && { playStoreUrl }),
           ...(promotionalCodes && { promotionalCodes }),
+          ...(iconUrl && { iconUrl }),
           error: "app_already_exists",
         });
         return redirect(`/register?${params.toString()}`);
@@ -174,6 +184,7 @@ export async function POST(request: NextRequest) {
           ...(googleGroupEmail && { googleGroupEmail }),
           ...(playStoreUrl && { playStoreUrl }),
           ...(promotionalCodes && { promotionalCodes }),
+          ...(iconUrl && { iconUrl }),
           error: "invalid_play_store_url",
         });
         return redirect(`/register?${params.toString()}`);
@@ -186,6 +197,7 @@ export async function POST(request: NextRequest) {
       ...(googleGroupEmail && { googleGroupEmail }),
       ...(playStoreUrl && { playStoreUrl }),
       ...(promotionalCodes && { promotionalCodes }),
+      ...(iconUrl && { iconUrl }),
       error: "creation_failed",
     });
     return redirect(`/register?${params.toString()}`);

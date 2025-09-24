@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getApp, getTesterByEmail, addTester } from "@/lib/firebase";
+import { getApp, getTesterByEmail, addTester, getAppOwnerAccessToken } from "@/lib/firebase";
+import { addUserToGoogleGroup } from "@/lib/google-groups";
 import { getSessionFromCookie } from "@/util/auth";
 import { redirect } from "next/navigation";
 
@@ -56,7 +57,7 @@ export async function POST(
 }
 
 async function handleSignupRegistration(
-  request: NextRequest,
+  _request: NextRequest,
   params: Promise<{ appId: string }>
 ) {
   try {
@@ -85,11 +86,44 @@ async function handleSignupRegistration(
       return redirect(`/signup/${appId}`);
     }
 
-    // Add user to testers collection for this app (without promotional code assignment yet)
+    const isConsumerGroup = app.googleGroupEmail.endsWith("@googlegroups.com");
+    let hasJoinedGroup = false;
+    
+    // For Workspace groups, try to automatically add the user to the Google Group
+    if (!isConsumerGroup) {
+      console.log(`Attempting to add user ${session.email} to Workspace group ${app.googleGroupEmail}`);
+      
+      try {
+        // Get the app owner's access token
+        const ownerAccessToken = await getAppOwnerAccessToken(appId);
+        
+        if (ownerAccessToken) {
+          const addedToGroup = await addUserToGoogleGroup(
+            app.googleGroupEmail,
+            session.email,
+            ownerAccessToken
+          );
+          
+          if (addedToGroup) {
+            console.log(`Successfully added ${session.email} to Workspace group ${app.googleGroupEmail}`);
+            hasJoinedGroup = true;
+          } else {
+            console.log(`Failed to add ${session.email} to Workspace group ${app.googleGroupEmail}`);
+          }
+        } else {
+          console.log(`No owner access token available for app ${appId}`);
+        }
+      } catch (error) {
+        console.error(`Error adding user to Workspace group:`, error);
+        // Don't fail the entire signup if group addition fails
+      }
+    }
+
+    // Add user to testers collection for this app
     await addTester({
       email: session.email,
       appId,
-      hasJoinedGroup: false, // They haven't joined the Google Group yet
+      hasJoinedGroup, // Will be true if successfully added to Workspace group
     });
 
     // Redirect back to signup page - page will read session cookie to determine status

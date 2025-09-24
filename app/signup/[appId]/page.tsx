@@ -5,7 +5,7 @@ import { APP_URL_BASE } from "@/lib/consts";
 import ErrorBox from "@/components/ErrorBox";
 import Button from "@/components/Button";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
-import SignOutButton from "@/components/SignOutButton";
+import AuthButton from "./auth-button";
 import AppIcon from "@/components/AppIcon";
 import styles from "./page.module.css";
 
@@ -64,8 +64,8 @@ export default async function SignupPage({
 
     // Always check for tester status based on session or email param
     let existingTester = null;
-    if (session && isConsumerGroup) {
-      // For authenticated users on consumer groups, check their registration status
+    if (session) {
+      // For authenticated users (both consumer and workspace groups), check their registration status
       existingTester = await getTesterByEmail(session.email, appId);
     } else if (email) {
       // For email lookups (returning testers)
@@ -251,14 +251,26 @@ export default async function SignupPage({
     }
 
     // Check if user is already fully registered (has joined group and has promo code)
+    // This applies to both consumer and workspace groups
     if (
-      isConsumerGroup &&
       session &&
       existingTester &&
       existingTester.hasJoinedGroup &&
       existingTester.promotionalCode
     ) {
       // User is already fully registered, redirect to complete page
+      return redirect(`/signup/${appId}/complete?s=${app.appIdSecret}`);
+    }
+
+    // For Workspace groups, if user is signed in and has been added (but no promo code yet),
+    // redirect to complete page to assign promo code
+    if (
+      !isConsumerGroup &&
+      session &&
+      existingTester &&
+      existingTester.hasJoinedGroup
+    ) {
+      // User has been added to Workspace group, redirect to complete page for promo code assignment
       return redirect(`/signup/${appId}/complete?s=${app.appIdSecret}`);
     }
 
@@ -319,18 +331,7 @@ export default async function SignupPage({
               </p>
             </div>
 
-            {session && (
-              <div
-                style={{
-                  textAlign: "center",
-                  marginTop: "24px",
-                  paddingTop: "24px",
-                  borderTop: "1px solid rgba(255,255,255,0.2)",
-                }}
-              >
-                <SignOutButton redirectTo={`/signup/${appId}`} />
-              </div>
-            )}
+            <AuthButton session={session} redirectTo={`/signup/${appId}`} />
           </div>
         </div>
       );
@@ -370,47 +371,23 @@ export default async function SignupPage({
             </p>
           </div>
         ) : (
-          // Workspace group flow - existing flow
+          // Workspace group flow - simplified for automatic group addition
           <div className={styles.step}>
-            <h3>Step 1: Join the Google Group</h3>
+            <h3>Sign In to Join Beta Testing</h3>
             <p>
-              To test this app, you need to join our beta testing Google Group.
-              Click the button below to join:
+              To test this app, sign in with your Google account. We'll automatically 
+              add you to our beta testing Google Group and assign you a promotional code.
             </p>
 
-            <a
-              href={`mailto:${app.googleGroupEmail}?subject=Join%20Beta%20Testing%20Group`}
-              className={styles.groupButton}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Join Google Group
-            </a>
+            <GoogleSignInButton
+              returnTo={`signup_${appId}`}
+              isConsumerGroup={false}
+            />
 
             <p className={styles.instruction}>
-              After joining the group (it may take a few minutes to be
-              approved), enter your email below to get access:
+              After signing in, you'll be automatically added to the Google Group 
+              and receive your promotional code instantly.
             </p>
-
-            <h4>Step 2: Enter Your Email</h4>
-            <p>
-              Enter the same email address you used to join the Google Group:
-            </p>
-
-            <form action="/api/testers" method="POST" className={styles.form}>
-              <input type="hidden" name="appId" value={appId} />
-              <input type="hidden" name="hasJoinedGroup" value="true" />
-
-              <input
-                type="email"
-                name="email"
-                required
-                placeholder="your-email@example.com"
-                className={styles.emailInput}
-              />
-
-              <Button type="submit">Get Access</Button>
-            </form>
           </div>
         )}
 
@@ -433,18 +410,7 @@ export default async function SignupPage({
           </form>
         </div>
 
-        {session && (
-          <div
-            style={{
-              textAlign: "center",
-              marginTop: "24px",
-              paddingTop: "24px",
-              borderTop: "1px solid rgba(255,255,255,0.2)",
-            }}
-          >
-            <SignOutButton redirectTo={`/signup/${appId}`} />
-          </div>
-        )}
+        <AuthButton session={session} redirectTo={`/signup/${appId}`} />
       </div>
     );
   } catch (err) {

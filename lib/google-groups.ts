@@ -51,6 +51,12 @@ export async function canUserManageGoogleGroup(
 ): Promise<boolean> {
   console.log(`Checking if user can manage Google Group: ${groupEmail}`);
 
+  // Debug: Log access token info (first/last 10 chars for security)
+  // const tokenPreview = accessToken
+  //   ? `${accessToken.substring(0, 10)}...${accessToken.substring(accessToken.length - 10)}`
+  //   : "undefined";
+  // console.log(`Access token preview: ${tokenPreview}`);
+
   // Check if this is a consumer Google Group (ends with @googlegroups.com)
   if (groupEmail.endsWith("@googlegroups.com")) {
     console.log(
@@ -68,9 +74,19 @@ export async function canUserManageGoogleGroup(
     return true;
   }
 
+  // Validate access token
+  if (!accessToken || accessToken.trim() === "") {
+    console.error("No access token provided for Workspace group verification");
+    return false;
+  }
+
   try {
     const auth = new OAuth2Client();
     auth.setCredentials({ access_token: accessToken });
+
+    console.log(
+      `Attempting to verify Workspace group access for: ${groupEmail}`
+    );
 
     // Try to get group information - this requires manage permissions (for Workspace groups only)
     const response = await admin.groups.get({
@@ -87,14 +103,19 @@ export async function canUserManageGoogleGroup(
       message: error.message,
     });
 
-    if (error.code === 404 || error.status === 404) {
+    if (error.code === 401 || error.status === 401) {
+      console.error(`Authentication error for Google Workspace group ${groupEmail}:
+1. The access token may be invalid or expired
+2. The token may not have the required scopes (admin.directory.group, groups)
+3. You may need to re-authenticate with proper Workspace admin permissions`);
+    } else if (error.code === 404 || error.status === 404) {
       console.error(`Google Workspace group ${groupEmail} not found. Please verify:
 1. The group email is correct
 2. The group exists in your Google Workspace domain
 3. You have admin access to this group`);
     } else if (error.code === 403 || error.status === 403) {
       console.error(
-        `Access denied to Google Workspace group ${groupEmail}. You need to be a domain administrator.`
+        `Access denied to Google Workspace group ${groupEmail}. You need to be a domain administrator with Groups management permissions.`
       );
     } else {
       console.error(
