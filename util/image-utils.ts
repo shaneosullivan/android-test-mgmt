@@ -2,20 +2,38 @@
  * Utility functions for downloading and processing images
  */
 
-import sharp from "sharp";
+import Jimp from "jimp";
+
+/**
+ * Converts Google Play Store URLs to PNG format to avoid WebP processing issues
+ */
+function convertToPNGFormat(imageUrl: string): string {
+  // Check if it's a Google Play Store URL with WebP format
+  if (
+    imageUrl.includes("googleusercontent.com") &&
+    imageUrl.includes("=s") &&
+    imageUrl.includes("-rw")
+  ) {
+    // Convert from WebP format (e.g., =s96-rw) to PNG format (e.g., =s96)
+    return imageUrl.replace(/-rw$/, "");
+  }
+  return imageUrl;
+}
 
 export async function downloadImageAsBase64(
   imageUrl: string
 ): Promise<string | null> {
   try {
-    console.log(`Downloading image from: ${imageUrl}`);
+    // Convert to PNG format if it's a Google Play Store URL
+    const processedUrl = convertToPNGFormat(imageUrl);
+    console.log(`Downloading image from: ${processedUrl}`);
 
     // Download the image with proper headers to avoid 429 errors
-    const response = await fetch(imageUrl, {
+    const response = await fetch(processedUrl, {
       headers: {
         "User-Agent":
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-        Accept: "image/webp,image/apng,image/*,*/*;q=0.8",
+        Accept: "image/png,image/jpeg,image/*,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9",
         "Cache-Control": "no-cache",
         Pragma: "no-cache",
@@ -40,47 +58,48 @@ export async function downloadImageAsBase64(
       return null;
     }
 
-    // Convert to array buffer
+    // Convert to array buffer and then to buffer
     const arrayBuffer = await response.arrayBuffer();
     const inputBuffer = Buffer.from(arrayBuffer);
 
-    // Process image with Sharp - resize if needed and optimize
-    const sharpInstance = sharp(inputBuffer);
-    const metadata = await sharpInstance.metadata();
+    // Process image with Jimp - resize if needed and optimize
+    const jimpImage = await Jimp.read(inputBuffer);
+    const originalWidth = jimpImage.bitmap.width;
+    const originalHeight = jimpImage.bitmap.height;
 
     console.log(
-      `Original image dimensions: ${metadata.width}x${metadata.height}`
+      `Original image dimensions: ${originalWidth}x${originalHeight}`
     );
 
-    let processedBuffer: Buffer;
-    let outputFormat = "png"; // Default to PNG for transparency support
-
     // Check if resizing is needed (max 100x100)
-    if (
-      metadata.width &&
-      metadata.height &&
-      (metadata.width > 100 || metadata.height > 100)
-    ) {
+    if (originalWidth > 100 || originalHeight > 100) {
       console.log(
-        `Resizing image from ${metadata.width}x${metadata.height} to fit within 100x100`
+        `Resizing image from ${originalWidth}x${originalHeight} to fit within 100x100`
       );
-      processedBuffer = await sharpInstance
-        .resize(100, 100, {
-          fit: "inside", // Maintain aspect ratio, fit within bounds
-          withoutEnlargement: true, // Don't enlarge if image is smaller
-        })
-        .png({ quality: 90, compressionLevel: 6 }) // High quality PNG
-        .toBuffer();
-    } else {
-      // Even if no resizing needed, optimize the image
-      processedBuffer = await sharpInstance
-        .png({ quality: 90, compressionLevel: 6 })
-        .toBuffer();
+
+      // Calculate new dimensions while maintaining aspect ratio
+      const aspectRatio = originalWidth / originalHeight;
+      let newWidth = 100;
+      let newHeight = 100;
+
+      if (aspectRatio > 1) {
+        // Landscape: width is limiting factor
+        newHeight = Math.round(100 / aspectRatio);
+      } else {
+        // Portrait or square: height is limiting factor
+        newWidth = Math.round(100 * aspectRatio);
+      }
+
+      jimpImage.resize(newWidth, newHeight);
     }
+
+    // Set quality and get buffer as PNG
+    jimpImage.quality(90); // Set quality to 90%
+    const processedBuffer = await jimpImage.getBufferAsync(Jimp.MIME_PNG);
 
     // Convert processed image to base64
     const base64 = processedBuffer.toString("base64");
-    const dataUrl = `data:image/${outputFormat};base64,${base64}`;
+    const dataUrl = `data:image/png;base64,${base64}`;
 
     console.log(
       `Successfully processed image to base64. Final size: ${Math.round(processedBuffer.length / 1024)}KB`
