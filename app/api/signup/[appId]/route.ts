@@ -140,8 +140,6 @@ async function handleSignupRegistration(
     // Redirect back to signup page - page will read session cookie to determine status
     return redirect(`/signup/${appId}`);
   } catch (error) {
-    console.error("Signup registration failed:", error);
-
     // Check if it's a Next.js redirect error (these should be allowed to propagate)
     if (
       error instanceof Error &&
@@ -150,6 +148,7 @@ async function handleSignupRegistration(
     ) {
       throw error;
     }
+    console.error("Signup registration failed:", error);
 
     return NextResponse.json(
       { error: "Failed to register user" },

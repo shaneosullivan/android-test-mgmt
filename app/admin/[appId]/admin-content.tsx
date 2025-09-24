@@ -28,6 +28,7 @@ import CopyButton from "./copy-button";
 import AppIcon from "@/components/AppIcon";
 import ConsumerGroupSetup from "./consumer-group-setup";
 import PromotionalCodesCard from "./promotional-codes-card";
+import SignOutButton from "@/components/SignOutButton";
 import styles from "./page.module.css";
 import StripeDonationButton from "@/components/StripeDonationButton";
 
@@ -219,6 +220,13 @@ function AdminContent(props: AdminContentProps) {
             ))}
           </div>
         )}
+      </section>
+
+      <section className={styles.signOutSection}>
+        <SignOutButton 
+          redirectTo={`/admin/${appId}`}
+          variant="secondary"
+        />
       </section>
     </div>
   );

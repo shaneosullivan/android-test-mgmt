@@ -6,6 +6,7 @@ import {
 import { getSessionFromCookie } from "@/util/auth";
 import LoginPrompt from "./login-prompt";
 import ErrorBox from "@/components/ErrorBox";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
 import AdminContent from "./admin-content";
 import styles from "./page.module.css";
 
@@ -25,11 +26,8 @@ export default async function AdminPage({ params }: AdminPageProps) {
   }
 
   try {
-    const [app, testers, promotionalCodes] = await Promise.all([
-      getApp(appId),
-      getTestersForApp(appId),
-      getPromotionalCodesForApp(appId),
-    ]);
+    // First, get the app to check ownership
+    const app = await getApp(appId);
 
     if (!app) {
       return (
@@ -38,6 +36,33 @@ export default async function AdminPage({ params }: AdminPageProps) {
         </div>
       );
     }
+
+    // Check if the current user is the owner of the app
+    if (session.email !== app.ownerId) {
+      return (
+        <div className={styles.container}>
+          <ErrorBox
+            title="Access Denied"
+            message={`This admin page can only be accessed by the app owner. You are currently signed in as ${session.email}.`}
+          >
+            <div style={{ textAlign: "center", marginTop: "20px" }}>
+              <p
+                style={{ margin: "16px 0", color: "#6b7280", fontSize: "14px" }}
+              >
+                Please sign in with the correct Google account:
+              </p>
+              <GoogleSignInButton returnTo={`/admin/${appId}`} />
+            </div>
+          </ErrorBox>
+        </div>
+      );
+    }
+
+    // Now get the rest of the data
+    const [testers, promotionalCodes] = await Promise.all([
+      getTestersForApp(appId),
+      getPromotionalCodesForApp(appId),
+    ]);
 
     if (!app.isSetupComplete) {
       return (

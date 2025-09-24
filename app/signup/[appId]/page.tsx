@@ -105,7 +105,7 @@ export default async function SignupPage({
             </div>
 
             {code && (
-              <PromotionalCodeDisplay 
+              <PromotionalCodeDisplay
                 code={code}
                 description="Keep this code safe - you can return to this page anytime to retrieve it."
               />
@@ -116,25 +116,6 @@ export default async function SignupPage({
               <p>You can now download the app from the Google Play Store:</p>
 
               <PlayStoreButton url={app.playStoreUrl} />
-            </div>
-
-            <div className={styles.returnSection}>
-              <p>
-                <strong>Returning tester?</strong> Enter your email below to
-                retrieve your promotional code.
-              </p>
-              <form action={`/signup/${appId}`} method="GET">
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="your-email@example.com"
-                  className={styles.emailInput}
-                  required
-                />
-                <Button type="submit" variant="secondary">
-                  Retrieve Code
-                </Button>
-              </form>
             </div>
           </div>
         </div>
@@ -179,9 +160,7 @@ export default async function SignupPage({
             </div>
 
             {existingTester.promotionalCode && (
-              <PromotionalCodeDisplay 
-                code={existingTester.promotionalCode}
-              />
+              <PromotionalCodeDisplay code={existingTester.promotionalCode} />
             )}
 
             <div className={styles.returnSection}>
@@ -372,25 +351,6 @@ export default async function SignupPage({
             </p>
           </div>
         )}
-
-        <div className={styles.returnSection}>
-          <p>
-            <strong>Returning tester?</strong> Enter your email to retrieve your
-            promotional code:
-          </p>
-          <form action={`/signup/${appId}`} method="GET">
-            <input
-              type="email"
-              name="email"
-              placeholder="your-email@example.com"
-              className={styles.emailInput}
-              required
-            />
-            <Button type="submit" variant="secondary">
-              Retrieve Code
-            </Button>
-          </form>
-        </div>
 
         <AuthButton session={session} redirectTo={`/signup/${appId}`} />
       </div>

@@ -480,3 +480,10 @@
     font-size: 20px;
   }
 }
+
+.signOutSection {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid #e2e8f0;
+  text-align: center;
+}
