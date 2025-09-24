@@ -25,11 +25,11 @@ type SerializedPromotionalCode = Omit<
 };
 import { APP_URL_BASE } from "@/lib/consts";
 import CopyButton from "./copy-button";
-import ErrorBox from "@/components/ErrorBox";
 import AppIcon from "@/components/AppIcon";
 import ConsumerGroupSetup from "./consumer-group-setup";
 import PromotionalCodesCard from "./promotional-codes-card";
 import styles from "./page.module.css";
+import StripeDonationButton from "@/components/StripeDonationButton";
 
 interface AdminContentProps {
   appId: string;
@@ -143,6 +143,10 @@ function AdminContent(props: AdminContentProps) {
           </div>
         </div>
       </section>
+
+      <div className={styles.donation}>
+        <StripeDonationButton />
+      </div>
 
       <PromotionalCodesCard
         appId={appId}

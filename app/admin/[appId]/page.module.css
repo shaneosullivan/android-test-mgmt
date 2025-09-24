@@ -50,6 +50,11 @@
   color: #1a202c;
 }
 
+.donation {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
 .details {
   display: flex;
   flex-direction: column;

@@ -5,10 +5,11 @@
   "scripts": {
     "kill-port": "lsof -ti:3016 | xargs kill -9 || true",
     "dev": "npm run kill-port && PORT=3016 source firebase.env && next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "npm run gen:config &&next build --turbopack",
     "start": "next start",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\""
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "gen:config": "node scripts/buildConfig.mjs"
   },
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.10",
