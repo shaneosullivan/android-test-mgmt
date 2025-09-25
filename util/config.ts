@@ -21,9 +21,12 @@ export function validateConfig(): ConfigValidationResult {
     "GOOGLE_CLIENT_SECRET",
     "GOOGLE_REDIRECT_URI",
     "JWT_SECRET",
+    "TOKEN_ENCRYPTION_KEY",
   ];
 
-  const allRequiredVars = [...firebaseVars, ...oauthVars];
+  const prodVars = ["PROD_DOMAIN"];
+
+  const allRequiredVars = [...firebaseVars, ...oauthVars, ...prodVars];
 
   const missing = allRequiredVars.filter((varName) => !process.env[varName]);
   const missingFirebase = firebaseVars.filter(

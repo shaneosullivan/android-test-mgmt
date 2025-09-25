@@ -103,6 +103,33 @@ const ENV_VARS: EnvVarConfig[] = [
       ],
     },
   },
+  {
+    name: "TOKEN_ENCRYPTION_KEY",
+    description: "Encryption key for securing OAuth tokens stored in the database.",
+    instructions: {
+      title: "Setup:",
+      steps: [
+        "Generate a secure random string (32+ characters)",
+        "Use a password manager or: openssl rand -hex 32",
+        "This encrypts stored OAuth tokens for security",
+        "Keep this secret secure and never change it in production",
+        "Different environments should use different keys",
+      ],
+    },
+  },
+  {
+    name: "PROD_DOMAIN",
+    description: "Production domain name for the service (without https://).",
+    instructions: {
+      title: "Setup:",
+      steps: [
+        "Set to your production domain name only (e.g., 'myapp.vercel.app')",
+        "Do not include 'https://' or trailing slash",
+        "For Vercel deployments, use the Vercel domain or custom domain",
+        "This is used to generate URLs in the application",
+      ],
+    },
+  },
 ];
 
 function checkEnvVar(name: string): boolean {
@@ -205,7 +232,13 @@ GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\\nYOUR_PRIVATE_K
 GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=your-client-secret
 GOOGLE_REDIRECT_URI=https://yourdomain.com/api/auth/callback
-JWT_SECRET=your-secure-random-string-32-chars-or-more`}
+
+# Security Configuration
+JWT_SECRET=your-secure-random-string-32-chars-or-more
+TOKEN_ENCRYPTION_KEY=your-secure-random-encryption-key-32-chars-or-more
+
+# Production Domain
+PROD_DOMAIN=yourdomain.com`}
               </pre>
             </div>
 
